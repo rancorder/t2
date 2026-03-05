@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import PCBViewer from './PCBViewer'
 import './App.css'
 
-const TOTAL = 12
-const LABELS = ['INTRO','PAIN','TRADE-OFF','DESIGN-CONFLICT','PROBLEM','RESULT','SOLUTION','DESIGN','ROLE','EFFECT','FIELDS','CLOSE']
+const TOTAL = 14
+const LABELS = ['INTRO','PAIN','TRADE-OFF','DESIGN-CONFLICT','PROBLEM','RESULT','SOLUTION','DESIGN','ROLE','EFFECT','FIELDS','CASES-IOT','CASES-MOBILITY','CLOSE']
 
 type Dir = 'fwd' | 'bwd'
 interface SlideState {
@@ -416,6 +416,128 @@ function S10() {
   )
 }
 
+// ── Scase1: 開発実績 IOT smart edge ───────────────────────
+function Scase1() {
+  const cases = [
+    {
+      tag: '事例 1-1',
+      title: 'ミニトマト品質検査システム',
+      partner: '協力：広島大学ナノデバイス研究所',
+      points: [
+        '農作物の良品・不良品を収穫現場や輸送中にリアルタイム判定',
+        'AI（DNN）を用いた熟練者クラスの高精度検出',
+        '小型エッジコンピュータでウェアラブルデバイスと連動',
+      ],
+      metrics: [{ val: 'DNN', label: 'AI推論エンジン' }, { val: 'Edge', label: 'クラウド不要' }, { val: '現場', label: '収穫・輸送中に判定' }],
+    },
+    {
+      tag: '事例 1-3',
+      title: '精密部品 AI生産管理システム',
+      partner: '協力：（有）宮田精工',
+      points: [
+        '数百〜千個の精密部品の数量を AI が自動カウント',
+        'AI（DNN）による高精度計測で人手ミスをゼロ化',
+        'AIエッジコンピュータで処理を高速化・省人化を実現',
+      ],
+      metrics: [{ val: '1000+', label: '部品/回 計測' }, { val: 'DNN', label: '高精度カウント' }, { val: '省人化', label: '自動管理' }],
+    },
+  ]
+  return (
+    <div className="scase-inner">
+      <div>
+        <div className="lbl r">CASES — IOT SMART EDGE</div>
+        <h2 className="scase-h r">AIで<span className="acc">現場の問題</span>を解決した実績</h2>
+      </div>
+      <div className="scase-grid r">
+        {cases.map((c, i) => (
+          <div className="scase-card" key={i}>
+            <div className="scase-card-tag">{c.tag}</div>
+            <div className="scase-card-title">{c.title}</div>
+            <div className="scase-card-partner">{c.partner}</div>
+            <ul className="scase-points">
+              {c.points.map((p, j) => (
+                <li key={j}>{p}</li>
+              ))}
+            </ul>
+            <div className="scase-metrics">
+              {c.metrics.map((m, j) => (
+                <div className="scase-metric" key={j}>
+                  <div className="scase-metric-val">{m.val}</div>
+                  <div className="scase-metric-label">{m.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="scase-footer r">
+        いずれも<span className="acc">　制約条件の中で成立するライン　</span>を設計した結果
+      </div>
+    </div>
+  )
+}
+
+// ── Scase2: 開発実績 Mobility ──────────────────────────────
+function Scase2() {
+  const cases = [
+    {
+      tag: '事例 2-2',
+      title: 'エアモビリティ向け フライトコントローラ',
+      size: '140 × 104 mm',
+      points: [
+        'エアモビリティの飛行制御・高度・速度・姿勢をリアルタイム制御',
+        '各種センサデータを高速取得・処理する高機能設計',
+        '小型エアモビリティへの搭載を想定した小型・低消費電力設計',
+      ],
+      metrics: [{ val: 'RT', label: 'リアルタイム制御' }, { val: '小型', label: '140×104mm' }, { val: '低電力', label: 'モビリティ搭載' }],
+    },
+    {
+      tag: '事例 2-3',
+      title: '車載ネットワーク セントラルゲートウェイ',
+      size: '140 × 120 mm',
+      points: [
+        '1台で全車載ネットワークをサポートするセントラルゲートウェイ',
+        'CAN / CAN-FD / Ethernet の各通信規格を相互変換',
+        '100Gbps Ethernet 対応の超高速通信を実現',
+      ],
+      metrics: [{ val: '100G', label: 'Ethernet対応' }, { val: '3規格', label: 'CAN/CAN-FD/ETH' }, { val: '1台', label: '全NW統合' }],
+    },
+  ]
+  return (
+    <div className="scase-inner">
+      <div>
+        <div className="lbl r">CASES — MOBILITY</div>
+        <h2 className="scase-h r">高難度領域の<span className="acc">設計実績</span></h2>
+      </div>
+      <div className="scase-grid r">
+        {cases.map((c, i) => (
+          <div className="scase-card" key={i}>
+            <div className="scase-card-tag">{c.tag}</div>
+            <div className="scase-card-title">{c.title}</div>
+            <div className="scase-card-partner">{c.size}</div>
+            <ul className="scase-points">
+              {c.points.map((p, j) => (
+                <li key={j}>{p}</li>
+              ))}
+            </ul>
+            <div className="scase-metrics">
+              {c.metrics.map((m, j) => (
+                <div className="scase-metric" key={j}>
+                  <div className="scase-metric-val">{m.val}</div>
+                  <div className="scase-metric-label">{m.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="scase-footer r">
+        性能・電力・サイズの<span className="acc">　成立ラインを設計　</span>した量産レベルの実績
+      </div>
+    </div>
+  )
+}
+
 function S11() {
   return (
     <div className="s11-wrap">
@@ -438,7 +560,7 @@ function S11() {
   )
 }
 
-const SLIDES = [S1, S2, S3, S4c, S4, S5, S6, S7, S8, S9, S10, S11]
+const SLIDES = [S1, S2, S3, S4c, S4, S5, S6, S7, S8, S9, S10, Scase1, Scase2, S11]
 
 // ── main App ──────────────────────────────────────────────
 
