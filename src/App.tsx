@@ -776,6 +776,8 @@ export default function App() {
     return () => clearTimeout(tStart)
   }, [state.cur])
 
+  const progress = (state.cur / TOTAL * 100).toFixed(1) + '%'
+
   return (
     <>
       {/* progress */}
