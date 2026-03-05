@@ -752,7 +752,29 @@ export default function App() {
     return () => { window.removeEventListener('touchstart', ts); window.removeEventListener('touchend', te) }
   }, [state.cur, go])
 
-  const progress = (state.cur / TOTAL * 100).toFixed(1) + '%'
+  // ── 全スライド共通：オーバーフロー検知 → 自動スクロール ──
+  useEffect(() => {
+    // トランジション完了後に実行
+    const tStart = setTimeout(() => {
+      const activeSlide = document.querySelector('.slide.active') as HTMLElement | null
+      if (!activeSlide) return
+      // スクロール位置をリセット（スライド切替時）
+      activeSlide.scrollTop = 0
+      const overflow = activeSlide.scrollHeight - activeSlide.clientHeight
+      if (overflow <= 24) return // 有意なオーバーフローがなければスキップ
+      // 1.2秒後にスクロールダウン開始
+      const tDown = setTimeout(() => {
+        activeSlide.scrollTo({ top: overflow, behavior: 'smooth' })
+        // 3秒後にトップへ戻る
+        const tUp = setTimeout(() => {
+          activeSlide.scrollTo({ top: 0, behavior: 'smooth' })
+        }, 3000)
+        return () => clearTimeout(tUp)
+      }, 1200)
+      return () => clearTimeout(tDown)
+    }, 550) // アニメーション完了（480ms）後
+    return () => clearTimeout(tStart)
+  }, [state.cur])
 
   return (
     <>
