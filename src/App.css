@@ -414,3 +414,118 @@ body {
   .fields-grid { grid-template-columns: 1fr; }
   .slabel { display: none; }
 }
+
+/* ═══════════════════════════════════════
+   SCAN EFFECT
+═══════════════════════════════════════ */
+/* scan overlay on each active slide */
+.slide.active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 48%,
+    rgba(232,0,15,0.055) 49%,
+    rgba(232,0,15,0.11) 50%,
+    rgba(232,0,15,0.055) 51%,
+    transparent 52%,
+    transparent 100%
+  );
+  animation: scanSweep 5s linear infinite;
+  pointer-events: none;
+  z-index: 200;
+  mix-blend-mode: screen;
+}
+@keyframes scanSweep {
+  0%   { transform: translateY(-105%); }
+  100% { transform: translateY(105%); }
+}
+
+/* Corner bracket decoration on each slide */
+.slide.active::before {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  background:
+    linear-gradient(to right, rgba(232,0,15,0.35) 1px, transparent 1px) 0 0 / 18px 18px no-repeat,
+    linear-gradient(to bottom, rgba(232,0,15,0.35) 1px, transparent 1px) 0 0 / 18px 18px no-repeat,
+    linear-gradient(to left, rgba(232,0,15,0.35) 1px, transparent 1px) 100% 0 / 18px 18px no-repeat,
+    linear-gradient(to bottom, rgba(232,0,15,0.35) 1px, transparent 1px) 100% 0 / 18px 18px no-repeat,
+    linear-gradient(to right, rgba(232,0,15,0.35) 1px, transparent 1px) 0 100% / 18px 18px no-repeat,
+    linear-gradient(to top, rgba(232,0,15,0.35) 1px, transparent 1px) 0 100% / 18px 18px no-repeat,
+    linear-gradient(to left, rgba(232,0,15,0.35) 1px, transparent 1px) 100% 100% / 18px 18px no-repeat,
+    linear-gradient(to top, rgba(232,0,15,0.35) 1px, transparent 1px) 100% 100% / 18px 18px no-repeat;
+  pointer-events: none;
+  z-index: 201;
+  animation: cornerPulse 4s ease-in-out infinite;
+}
+@keyframes cornerPulse {
+  0%,100% { opacity: 0.55; }
+  50%     { opacity: 1.0; }
+}
+
+/* content-area inner scan frame for panels */
+.s2-inner, .s3-inner, .s4-inner, .s5-inner,
+.s6-inner, .s7-inner, .s8-inner, .s9-inner,
+.s10-inner, .s11-wrap {
+  position: relative;
+}
+.s2-inner::before, .s3-inner::before, .s4-inner::before,
+.s5-inner::before, .s7-inner::before, .s8-inner::before,
+.s9-inner::before, .s10-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 48.5%,
+    rgba(56,182,255,0.03) 49%,
+    rgba(56,182,255,0.065) 50%,
+    rgba(56,182,255,0.03) 51%,
+    transparent 51.5%,
+    transparent 100%
+  );
+  animation: innerScan 7s linear infinite;
+  pointer-events: none;
+  z-index: 50;
+}
+@keyframes innerScan {
+  0%   { transform: translateY(-110%); }
+  100% { transform: translateY(110%); }
+}
+
+/* HUD border for the spec/comparison rows */
+.s6-specs {
+  position: relative;
+}
+.s6-specs::before {
+  content: '';
+  position: absolute;
+  left: -8px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg,
+    transparent,
+    rgba(232,0,15,0.6) 30%,
+    rgba(232,0,15,0.6) 70%,
+    transparent);
+  animation: vPulse 3s ease-in-out infinite;
+}
+@keyframes vPulse {
+  0%,100% { opacity: 0.3; }
+  50% { opacity: 1.0; }
+}
+
+/* Data readout flicker on labels */
+.lbl {
+  position: relative;
+}
+.slide.active .lbl::after {
+  content: attr(data-label);
+  animation: flicker 8s step-end infinite;
+}
+@keyframes flicker {
+  0%,95%,97%,99%,100% { opacity: 1; }
+  96%,98% { opacity: 0.2; }
+}
