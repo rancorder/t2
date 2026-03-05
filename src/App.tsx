@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import PCBViewer from './PCBViewer'
 import './App.css'
 
-const TOTAL = 11
-const LABELS = ['INTRO','PAIN','TRADE-OFF','PROBLEM','RESULT','SOLUTION','DESIGN','ROLE','EFFECT','FIELDS','CLOSE']
+const TOTAL = 12
+const LABELS = ['INTRO','PAIN','TRADE-OFF','DESIGN-CONFLICT','PROBLEM','RESULT','SOLUTION','DESIGN','ROLE','EFFECT','FIELDS','CLOSE']
 
 type Dir = 'fwd' | 'bwd'
 interface SlideState {
@@ -99,6 +99,71 @@ function S3() {
           <div className="tri-n bl"><div className="tri-n-icon">📦</div><div className="tri-n-name">小型</div><div className="tri-n-en">COMPACT</div></div>
           <div className="tri-n br"><div className="tri-n-icon">🔋</div><div className="tri-n-name">低電力</div><div className="tri-n-en">LOW POWER</div></div>
           <div className="tri-center">TRADE<br />OFF</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── S4c DESIGN CONFLICT ────────────────────────────────────
+function S4c() {
+  const cases = [
+    {
+      num: '01',
+      title: '性能を上げる',
+      steps: ['GPUを搭載', '消費電力が設計上限を超える'],
+      result: '冷却設計が成立しない',
+    },
+    {
+      num: '02',
+      title: '省電力化',
+      steps: ['CPUクロックを下げる', 'AI推論速度が不足'],
+      result: '要求性能を満たせない',
+    },
+    {
+      num: '03',
+      title: '小型化',
+      steps: ['筐体サイズを縮小', '放熱スペース不足'],
+      result: '熱設計が成立しない',
+    },
+  ]
+  return (
+    <div className="s4c-inner">
+      <div>
+        <div className="lbl r">DESIGN CONFLICT</div>
+        <h2 className="s4c-h r">
+          設計は<br />
+          <span className="acc">「成立ライン」</span>を<br />
+          探す作業
+        </h2>
+        <p className="s4c-sub r">多くの開発は性能・電力・サイズの衝突で止まる</p>
+      </div>
+
+      <div className="conflict-grid r">
+        {cases.map((c, i) => (
+          <div className="conflict-card" key={i}>
+            <div className="conflict-case-num">CASE {c.num}</div>
+            <div className="conflict-title">{c.title}</div>
+            <div className="conflict-flow">
+              {c.steps.map((step, j) => (
+                <div key={j} className="conflict-step-wrap">
+                  <div className="conflict-step">{step}</div>
+                  {j < c.steps.length - 1 && <div className="conflict-arrow">↓</div>}
+                </div>
+              ))}
+            </div>
+            <div className="conflict-result">→ {c.result}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="s4c-footer r">
+        <div className="s4c-msg">
+          設計はスペックを上げる作業ではない<br />
+          <strong>成立するラインを見つける作業</strong>
+        </div>
+        <div className="s4c-cta">
+          その成立ラインを設計するのが<span className="acc">　T²</span>
         </div>
       </div>
     </div>
@@ -373,7 +438,7 @@ function S11() {
   )
 }
 
-const SLIDES = [S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11]
+const SLIDES = [S1, S2, S3, S4c, S4, S5, S6, S7, S8, S9, S10, S11]
 
 // ── main App ──────────────────────────────────────────────
 
