@@ -156,6 +156,10 @@ function S5() {
           </div>
         ))}
       </div>
+      {/* 修正2: T²の立場を明確にする1文 */}
+      <div className="s5-partner r">
+        だから<span className="acc">　設計の成立ラインを決める　</span>設計パートナーが必要になる
+      </div>
     </div>
   )
 }
@@ -165,7 +169,9 @@ function S6() {
     <div className="s6-inner">
       <div className="s6-info">
         <div className="lbl r">SOLUTION</div>
-        <h2 className="s6-h r">世界最小クラス<br /><span className="acc">AIエッジコンピュータ</span></h2>
+        {/* 修正1: 営業コピー → エンジニア向け制約条件型タイトル */}
+        <h2 className="s6-h r">この条件で成立する<br /><span className="acc">AIエッジ設計</span></h2>
+        <div className="s6-subtitle r">38×34mm　3W以内　100FPS AI推論</div>
         <div className="s6-specs r">
           {[
             { val:'38×34', unit:'mm', label:'記念切手サイズ' },
@@ -199,6 +205,8 @@ function S6() {
       </div>
       <div className="s6-canvas">
         <PCBViewer />
+        {/* 修正8: AI推論データフロー可視化テキスト */}
+        <div className="s6-canvas-label">AI推論データフローを可視化</div>
       </div>
     </div>
   )
@@ -215,7 +223,8 @@ function S7() {
     <div className="s7-inner">
       <div>
         <div className="lbl r">DESIGN AREAS</div>
-        <h2 className="s7-h r">T²の<span className="acc">設計領域</span></h2>
+{/* 修正3: タイトル変更 */}
+        <h2 className="s7-h r">T²が解決する<span className="acc">設計領域</span></h2>
       </div>
       <div className="da-rows">
         {items.map((it, i) => (
@@ -246,7 +255,8 @@ function S8() {
       <div className="s8-left">
         <div className="lbl r">ROLE</div>
         <h2 className="s8-h r">T²の<span className="acc">役割</span></h2>
-        <div className="s8-sub r">成立ラインの設計</div>
+{/* 修正4: コピー変更 */}
+        <div className="s8-sub r">成立ラインを決める設計</div>
         <div className="s8-msg-main r">トレードオフを<br /><span>設計する</span></div>
         <div className="s8-msg-sub r">最適な成立ラインを、<br />経験と技術で導き出す</div>
       </div>
@@ -374,6 +384,13 @@ export default function App() {
   const go = useCallback((n: number) => {
     setState(s => {
       if (n < 1 || n > TOTAL || n === s.cur || s.busy) return s
+      // 修正10: S5→S6遷移時に0.2秒ディレイで視覚的区切りを強調
+      if (s.cur === 5 && n === 6) {
+        setTimeout(() => {
+          setState(prev => ({ ...prev, cur: 6, prev: 5, dir: 'fwd', busy: true }))
+        }, 200)
+        return s // 一旦据え置き、setTimeoutで遷移
+      }
       return { cur: n, prev: s.cur, dir: n > s.cur ? 'fwd' : 'bwd', busy: true }
     })
   }, [])

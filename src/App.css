@@ -241,6 +241,14 @@ body {
 }
 .s5-h { font-family: var(--fa); font-size: clamp(34px,5.5vw,64px); margin-bottom: clamp(16px,2.5vh,28px); line-height: 0.9; }
 .casc-list { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+/* 修正2: S5パートナーテキスト */
+.s5-partner {
+  margin-top: clamp(12px, 2vh, 20px);
+  padding: clamp(12px, 1.8vh, 18px) clamp(16px, 2.5vw, 28px);
+  border-top: 1px solid rgba(232,0,15,0.25);
+  font-family: var(--fa); font-size: clamp(14px, 1.8vw, 20px);
+  color: rgba(240,236,228,0.78); line-height: 1.6;
+}
 .cc { display: flex; align-items: center; gap: clamp(20px,3vw,40px); padding: clamp(14px,2.2vh,22px) 0; border-bottom: 1px solid var(--dim); }
 .cc:first-child { border-top: 1px solid var(--dim); }
 .cc-num { font-family: var(--fa); font-size: clamp(40px,7vw,88px); color: rgba(255,255,255,0.04); flex-shrink: 0; line-height: 1; width: clamp(60px,8vw,110px); text-align: right; }
@@ -269,7 +277,20 @@ body {
 .s6-cmp-fill { height: 100%; }
 .s6-cmp-size { width: 56px; font-size: 9px; color: var(--mid); }
 .s6-cmp-row.mine .s6-cmp-name,.s6-cmp-row.mine .s6-cmp-size { color: var(--red); }
+.s6-subtitle {
+  font-family: var(--fm); font-size: clamp(10px, 1.3vw, 13px);
+  letter-spacing: 0.18em; color: var(--mid);
+  margin-top: -4px; margin-bottom: 2px;
+}
 .s6-hint { font-family: var(--fm); font-size: 9px; letter-spacing: 0.1em; color: var(--dim); }
+/* canvas label — bottom-right of 3D viewer */
+.s6-canvas { position: relative; }
+.s6-canvas-label {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  font-family: var(--fm); font-size: 9px; letter-spacing: 0.18em;
+  color: rgba(56,182,255,0.55); pointer-events: none; white-space: nowrap;
+  animation: innerScan 7s linear infinite;
+}
 .s6-canvas { background: #071524; overflow: hidden; }
 
 /* ═══ S7 DESIGN ═══ */
@@ -476,6 +497,7 @@ body {
   .s6-h { font-size: clamp(22px, 7vw, 32px); }
   .s6-spec-val { font-size: clamp(20px, 6vw, 28px); }
   .s6-hint { display: none; }
+  .s6-subtitle { font-size: 10px; letter-spacing: 0.1em; }
 
   /* ── S7 DESIGN ── */
   .s7-inner { padding: 44px 18px 16px; }
