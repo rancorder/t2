@@ -1,0 +1,448 @@
+import { useState, useEffect, useCallback, useRef } from 'react'
+import PCBViewer from './PCBViewer'
+import './App.css'
+
+const TOTAL = 11
+const LABELS = ['INTRO','PAIN','TRADE-OFF','PROBLEM','RESULT','SOLUTION','DESIGN','ROLE','EFFECT','FIELDS','CLOSE']
+
+type Dir = 'fwd' | 'bwd'
+interface SlideState {
+  cur: number
+  prev: number | null
+  dir: Dir
+  busy: boolean
+}
+
+// ── individual slides ──────────────────────────────────────
+
+function S1() {
+  return (
+    <>
+      <div className="s1-bg">
+        <div className="s1-slash" />
+        <div className="s1-slash2" />
+        <div className="s1-big r">止まる</div>
+      </div>
+      <div className="s1-content">
+        <div className="s1-eyebrow r">T²LABORATORY — EDGE COMPUTER DESIGN SERVICE</div>
+        <div className="s1-line1 r">製品開発が</div>
+        <div className="s1-line2 r">止まる</div>
+        <div className="s1-line3 r">瞬間</div>
+        <div className="s1-tags r">
+          <span className="s1-tag">AI</span>
+          <span className="s1-tag">IoT</span>
+          <span className="s1-tag">モビリティ</span>
+        </div>
+        <p className="s1-sub r">機能が増えるほど<br /><strong>設計は難しくなる</strong></p>
+        <div className="s1-hint r">
+          <span className="s1-hint-dot" />キー / スワイプ / タップで進む
+        </div>
+      </div>
+    </>
+  )
+}
+
+function S2() {
+  return (
+    <div className="s2-inner">
+      <div className="s2-label r">PAIN</div>
+      <div className="s2-qs">
+        {[
+          ['📐','「このサイズに','入りますか？」'],
+          ['⚡','「3W以内でAIは','動きますか？」'],
+          ['📡','「通信帯域','足りますか？」'],
+          ['🌡️','「放熱どう','しますか？」'],
+        ].map(([icon, l1, l2], i) => (
+          <div className="s2-q r" key={i}>
+            <div className="s2-q-icon">{icon}</div>
+            <div className="s2-q-text">{l1}<br /><strong>{l2}</strong></div>
+          </div>
+        ))}
+      </div>
+      <div className="s2-conclusion r">
+        <div className="s2-c-tag">── 結論 ──</div>
+        <div className="s2-c-main">誰も答えを出せず、設計が<span className="blink">止まる</span></div>
+      </div>
+    </div>
+  )
+}
+
+function S3() {
+  return (
+    <div className="s3-inner">
+      <div className="s3-left">
+        <div className="lbl r">TRADE-OFF</div>
+        <h2 className="s3-h r">問題の<br /><span className="acc">正体</span></h2>
+        <p className="s3-desc r">
+          AIエッジ機器の設計には<br /><strong>3つの競合制約</strong>が常に存在する。<br /><br />
+          この3つは<strong>根本的にトレードオフ</strong>であり、<br />1つを最大化すると必ず他が犠牲になる。
+        </p>
+      </div>
+      <div className="s3-right r">
+        <div className="tri-wrap">
+          <svg className="tri-svg" viewBox="0 0 400 360" fill="none">
+            <defs>
+              <linearGradient id="tg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#e8000f" />
+                <stop offset="50%" stopColor="#ff6600" />
+                <stop offset="100%" stopColor="#e8000f" />
+              </linearGradient>
+            </defs>
+            <polygon points="200,52 38,316 362,316"
+              fill="rgba(232,0,15,0.03)" stroke="url(#tg1)" strokeWidth="1.5" strokeDasharray="7,5">
+              <animateTransform attributeName="transform" type="rotate"
+                from="0 200 184" to="360 200 184" dur="90s" repeatCount="indefinite" />
+            </polygon>
+            <polygon points="200,52 38,316 362,316" fill="none" stroke="url(#tg1)" strokeWidth="20" opacity=".04" />
+          </svg>
+          <div className="tri-n top"><div className="tri-n-icon">🏎️</div><div className="tri-n-name">高性能</div><div className="tri-n-en">HIGH PERF</div></div>
+          <div className="tri-n bl"><div className="tri-n-icon">📦</div><div className="tri-n-name">小型</div><div className="tri-n-en">COMPACT</div></div>
+          <div className="tri-n br"><div className="tri-n-icon">🔋</div><div className="tri-n-name">低電力</div><div className="tri-n-en">LOW POWER</div></div>
+          <div className="tri-center">TRADE<br />OFF</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function S4() {
+  const [open, setOpen] = useState<number | null>(null)
+  const items = [
+    { num:'01', want:'🤖　AIを入れたい', prob:'⚡ 電力不足', detail:<>AIチップは一般的に<strong>5W以上の電力</strong>を要求する。バッテリー駆動や小型筐体では即アウト。T²はNPU活用とアーキテクチャ最適化で<strong>1W以下の推論</strong>を実現する。</> },
+    { num:'02', want:'📡　センサを増やしたい', prob:'📶 通信帯域不足', detail:<>センサ数が増えるほどデータ量が爆発する。標準的なI2C/SPI帯域では<strong>処理落ちが発生</strong>。T²は高速インターフェイス設計とFPGAによる並列処理で解消する。</> },
+    { num:'03', want:'📦　小型化したい', prob:'🌡️ 放熱問題', detail:<>小型化で表面積が減り、熱密度が上昇する。<strong>熱が逃げない</strong>ため性能を絞らざるを得ない。T²は基板レイアウト段階から熱設計を組み込み、放熱と小型化を両立させる。</> },
+  ]
+  return (
+    <div className="s4-inner">
+      <div>
+        <div className="lbl r">PROBLEM</div>
+        <h2 className="s4-h r">典型的な<span className="acc">設計詰まり</span></h2>
+      </div>
+      <div className="bn-list">
+        {items.map((it, i) => (
+          <div className={`bn r${open === i ? ' open' : ''}`} key={i} onClick={() => setOpen(open === i ? null : i)}>
+            <div className="bn-row">
+              <div className="bn-num">{it.num}</div>
+              <div className="bn-want">{it.want}</div>
+              <div className="bn-arr">▸</div>
+              <div className="bn-prob">{it.prob}</div>
+            </div>
+            <div className="bn-detail">{it.detail}</div>
+          </div>
+        ))}
+      </div>
+      <div className="bn-hint r">▸ 各行をクリックで詳細確認</div>
+    </div>
+  )
+}
+
+function S5() {
+  const items = [
+    { num:'01', icon:'🔄', text:'試作の繰り返し' },
+    { num:'02', icon:'📅', text:'開発遅延' },
+    { num:'03', icon:'💸', text:'コスト増加' },
+    { num:'04', icon:'🛑', text:'プロジェクト停滞' },
+  ]
+  return (
+    <div className="s5-inner">
+      <div className="lbl r">RESULT</div>
+      <h2 className="s5-h r">その<span className="acc">結果</span>...</h2>
+      <div className="casc-list">
+        {items.map((it, i) => (
+          <div className="cc r" key={i}>
+            <div className="cc-num">{it.num}</div>
+            <div className="cc-icon">{it.icon}</div>
+            <div className="cc-text">{it.text}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function S6() {
+  return (
+    <div className="s6-inner">
+      <div className="s6-info">
+        <div className="lbl r">SOLUTION</div>
+        <h2 className="s6-h r">世界最小クラス<br /><span className="acc">AIエッジコンピュータ</span></h2>
+        <div className="s6-specs r">
+          {[
+            { val:'38×34', unit:'mm', label:'記念切手サイズ' },
+            { val:'2〜3', unit:'W', label:'低消費電力' },
+            { val:'100', unit:'FPS', label:'AI物体認識' },
+          ].map((s, i) => (
+            <div className="s6-spec" key={i}>
+              <div className="s6-spec-val">{s.val}<span className="s6-spec-unit">{s.unit}</span></div>
+              <div className="s6-spec-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+        <div className="s6-cmp r">
+          <div className="s6-cmp-row mine">
+            <span className="s6-cmp-name">当社</span>
+            <div className="s6-cmp-track"><div className="s6-cmp-fill" style={{ width:'27%', background:'var(--red)' }} /></div>
+            <span className="s6-cmp-size">1/3サイズ</span>
+          </div>
+          <div className="s6-cmp-row">
+            <span className="s6-cmp-name">Pi 4B</span>
+            <div className="s6-cmp-track"><div className="s6-cmp-fill" style={{ width:'100%', background:'#1a2840' }} /></div>
+            <span className="s6-cmp-size">基準</span>
+          </div>
+          <div className="s6-cmp-row">
+            <span className="s6-cmp-name">Jetson</span>
+            <div className="s6-cmp-track"><div className="s6-cmp-fill" style={{ width:'100%', background:'#131e30' }} /></div>
+            <span className="s6-cmp-size">1.68×</span>
+          </div>
+        </div>
+        <div className="s6-hint r">← ドラッグで回転 ／ スクロールでズーム →</div>
+      </div>
+      <div className="s6-canvas">
+        <PCBViewer />
+      </div>
+    </div>
+  )
+}
+
+function S7() {
+  const items = [
+    { icon:'⚡', title:'電子回路設計', desc:'アナログ・デジタル回路、電源設計、ギガビット高速インターフェイス、基板レイアウト。EMC対策から熱設計まで量産を見据えた設計。', num:'01' },
+    { icon:'🔧', title:'FPGA / SOC設計', desc:'SOC・FPGA機能設計、ロジック最適化、カスタムIPコア開発。並列処理・リアルタイム応答が必要な制御系に対応。', num:'02' },
+    { icon:'💾', title:'組込みソフト開発', desc:'Embedded Software、RTOS、ファームウェア、デバイスドライバ。ハードウェアを最大限に活かすソフトウェア実装。', num:'03' },
+    { icon:'🤖', title:'AIエッジ実装', desc:'NPU活用、ニューラルネット最適化、エッジAI推論エンジン。クラウドに依存しないリアルタイム推論。', num:'04' },
+  ]
+  return (
+    <div className="s7-inner">
+      <div>
+        <div className="lbl r">DESIGN AREAS</div>
+        <h2 className="s7-h r">T²の<span className="acc">設計領域</span></h2>
+      </div>
+      <div className="da-rows">
+        {items.map((it, i) => (
+          <div className="da-row r" key={i}>
+            <div className="da-icon">{it.icon}</div>
+            <div>
+              <div className="da-title">{it.title}</div>
+              <div className="da-desc">{it.desc}</div>
+            </div>
+            <div className="da-num">{it.num}</div>
+          </div>
+        ))}
+      </div>
+      <div className="da-unity r">
+        <span className="u-term">ハード</span>
+        <span className="u-op">＋</span>
+        <span className="u-term">ソフト</span>
+        <span className="u-op">=</span>
+        <span className="u-result">一気通貫設計</span>
+      </div>
+    </div>
+  )
+}
+
+function S8() {
+  return (
+    <div className="s8-inner">
+      <div className="s8-left">
+        <div className="lbl r">ROLE</div>
+        <h2 className="s8-h r">T²の<span className="acc">役割</span></h2>
+        <div className="s8-sub r">成立ラインの設計</div>
+        <div className="s8-msg-main r">トレードオフを<br /><span>設計する</span></div>
+        <div className="s8-msg-sub r">最適な成立ラインを、<br />経験と技術で導き出す</div>
+      </div>
+      <div className="s8-right r">
+        <div className="role-diag">
+          <svg className="role-svg" viewBox="0 0 500 440" fill="none">
+            <line x1="250" y1="210" x2="250" y2="52" stroke="rgba(232,0,15,0.22)" strokeWidth="1.5" strokeDasharray="6,4" />
+            <line x1="250" y1="210" x2="62" y2="390" stroke="rgba(232,0,15,0.22)" strokeWidth="1.5" strokeDasharray="6,4" />
+            <line x1="250" y1="210" x2="438" y2="390" stroke="rgba(232,0,15,0.22)" strokeWidth="1.5" strokeDasharray="6,4" />
+            <polygon points="250,40 48,408 452,408" fill="rgba(232,0,15,0.025)" stroke="rgba(232,0,15,0.12)" strokeWidth="1.5" />
+          </svg>
+          <div className="role-center">
+            <div className="role-t2">T²</div>
+            <div className="role-sub-label">BALANCE</div>
+          </div>
+          <div className="rn top"><div className="rn-icon">🏎️</div><div className="rn-label">性能</div></div>
+          <div className="rn bl"><div className="rn-icon">📦</div><div className="rn-label">小型</div></div>
+          <div className="rn br"><div className="rn-icon">🔋</div><div className="rn-label">電力</div></div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function S9() {
+  const bef = ['設計判断できない','試作を繰り返す','開発期間が伸びる','コストが膨らむ','専門人材不足']
+  const aft = ['設計判断ができる','試作回数を削減','開発期間を短縮','コストを削減','専門人材も不要に']
+  return (
+    <div className="s9-inner">
+      <div className="s9-top r">
+        <div className="lbl">EFFECT</div>
+        <h2 className="s9-h">T²を使うと<span className="acc">どう変わる？</span></h2>
+      </div>
+      <div className="s9-cols">
+        <div className="s9-bef">
+          <div className="s9-col-tag r">── BEFORE ──</div>
+          <div className="s9-list">
+            {bef.map((t, i) => (
+              <div className="s9-row r" key={i}>
+                <span className="s9-icon">✗</span>
+                <span className="s9-text">{t}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="s9-divider r">
+          <div className="s9-div-arr">→</div>
+          <div className="s9-div-lbl">T²</div>
+        </div>
+        <div className="s9-aft">
+          <div className="s9-col-tag r">── AFTER ──</div>
+          <div className="s9-list">
+            {aft.map((t, i) => (
+              <div className="s9-row r" key={i}>
+                <span className="s9-icon">✓</span>
+                <span className="s9-text">{t}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function S10() {
+  const fields = [
+    { icon:'📡', name:'IoT', detail:'センサ端末 / ウェアラブル / 無線タグ' },
+    { icon:'🚗', name:'モビリティ', detail:'自動車ECU / ドローン / エアモビリティ' },
+    { icon:'🏭', name:'産業機械', detail:'PLC制御 / モータ制御 / 検査装置' },
+    { icon:'⚗️', name:'半導体装置', detail:'製造プロセス / 流量制御 / 防塵装置' },
+    { icon:'🏥', name:'医療機器', detail:'視力検査 / レントゲン制御 / 分析装置' },
+  ]
+  return (
+    <div className="s10-inner">
+      <div>
+        <div className="lbl r">FIELDS</div>
+        <h2 className="s10-h r">対象<span className="acc">分野</span></h2>
+      </div>
+      <div className="fields-grid">
+        {fields.map((f, i) => (
+          <div className="f-item r" key={i}>
+            <div className="f-item-icon">{f.icon}</div>
+            <div>
+              <div className="f-item-name">{f.name}</div>
+              <div className="f-item-detail">{f.detail}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function S11() {
+  return (
+    <div className="s11-wrap">
+      <div className="s11-problem r">問題の本質は ── 技術不足ではない</div>
+      <div className="s11-main r">制約のトレードオフが<br />決まっていない</div>
+      <div className="s11-div r" />
+      <div className="s11-sol r">
+        T²は<span className="acc">その成立ラインを<br />設計する</span>
+      </div>
+      <div className="s11-contact r">
+        <div className="s11-clbl">お問い合わせ</div>
+        <div className="s11-email"><a href="mailto:info@t2-laboratory.com">info@t2-laboratory.com</a></div>
+        <div className="s11-url">t2-laboratory.com</div>
+      </div>
+      <div className="s11-footer r">
+        <div className="s11-t2">T²</div>
+        <div className="s11-tagline">AIをもっと身近に</div>
+      </div>
+    </div>
+  )
+}
+
+const SLIDES = [S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11]
+
+// ── main App ──────────────────────────────────────────────
+
+export default function App() {
+  const [state, setState] = useState<SlideState>({ cur: 1, prev: null, dir: 'fwd', busy: false })
+  const touchX = useRef(0)
+
+  const go = useCallback((n: number) => {
+    setState(s => {
+      if (n < 1 || n > TOTAL || n === s.cur || s.busy) return s
+      return { cur: n, prev: s.cur, dir: n > s.cur ? 'fwd' : 'bwd', busy: true }
+    })
+  }, [])
+
+  // clear busy after animation
+  useEffect(() => {
+    if (!state.busy) return
+    const t = setTimeout(() => setState(s => ({ ...s, prev: null, busy: false })), 480)
+    return () => clearTimeout(t)
+  }, [state.busy, state.cur])
+
+  // keyboard
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(state.cur + 1) }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(state.cur - 1) }
+    }
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [state.cur, go])
+
+  // touch
+  useEffect(() => {
+    const ts = (e: TouchEvent) => { touchX.current = e.touches[0].clientX }
+    const te = (e: TouchEvent) => {
+      const dx = e.changedTouches[0].clientX - touchX.current
+      if (Math.abs(dx) > 50) dx < 0 ? go(state.cur + 1) : go(state.cur - 1)
+    }
+    window.addEventListener('touchstart', ts, { passive: true })
+    window.addEventListener('touchend', te, { passive: true })
+    return () => { window.removeEventListener('touchstart', ts); window.removeEventListener('touchend', te) }
+  }, [state.cur, go])
+
+  const progress = (state.cur / TOTAL * 100).toFixed(1) + '%'
+
+  return (
+    <>
+      {/* progress */}
+      <div className="prog" style={{ width: progress }} />
+      <div className="slabel">{LABELS[state.cur - 1]}</div>
+
+      {/* slides */}
+      <div className="sw">
+        {SLIDES.map((Slide, i) => {
+          const n = i + 1
+          let cls = 'slide'
+          if (n === state.cur) cls += state.prev !== null ? ` active enter-${state.dir}` : ' active'
+          else if (n === state.prev) cls += ` exit-${state.dir}`
+          return (
+            <div className={cls} key={n}>
+              <Slide />
+            </div>
+          )
+        })}
+      </div>
+
+      {/* nav */}
+      <nav className="nav">
+        <button className="nav-btn" onClick={() => go(state.cur - 1)} disabled={state.cur === 1}>
+          ◀ PREV
+        </button>
+        <div className="counter">
+          <span className="counter-cur">{String(state.cur).padStart(2, '0')}</span>
+          <span className="counter-tot">/ {TOTAL}</span>
+        </div>
+        <button className="nav-btn next" onClick={() => go(state.cur + 1)} disabled={state.cur === TOTAL}>
+          NEXT ▶
+        </button>
+      </nav>
+    </>
+  )
+}
