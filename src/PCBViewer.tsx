@@ -10,6 +10,7 @@
  */
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 // ─── State ────────────────────────────────────────────────
 interface ManhattanParticle {
@@ -129,18 +130,12 @@ export default function PCBViewer() {
     buildAIDemo(scene, s)
 
     // ── OrbitControls ──────────────────────────────────────
-    const sc = document.createElement('script')
-    sc.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js'
-    sc.onload = () => {
-      const OC = (THREE as any).OrbitControls; if (!OC) return
-      const ctrl = new OC(camera, renderer.domElement)
-      ctrl.enableDamping = true; ctrl.dampingFactor = 0.05
-      ctrl.autoRotate = true; ctrl.autoRotateSpeed = 0.4
-      ctrl.minDistance = 3; ctrl.maxDistance = 12
-      ctrl.maxPolarAngle = Math.PI * 0.43
-      s.controls = ctrl
-    }
-    document.head.appendChild(sc)
+    const ctrl = new OrbitControls(camera, renderer.domElement)
+    ctrl.enableDamping = true; ctrl.dampingFactor = 0.05
+    ctrl.autoRotate = true; ctrl.autoRotateSpeed = 0.4
+    ctrl.minDistance = 3; ctrl.maxDistance = 12
+    ctrl.maxPolarAngle = Math.PI * 0.43
+    s.controls = ctrl
 
     // ── Resize ─────────────────────────────────────────────
     const onResize = () => {
@@ -267,20 +262,24 @@ function castellated(root: THREE.Group) {
 
 function usbC(root: THREE.Group) {
   const shell = mp(0x2a2a2e, 0.3, 0.85)
-  root.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.2, 0.48), shell.clone()),
-    { position: new THREE.Vector3(-0.35, Y0 + 0.1, -BD / 2 - 0.18) }))
-  root.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.12, 0.06), mp(0x080810, 0.9, 0.1)),
-    { position: new THREE.Vector3(-0.35, Y0 + 0.1, -BD / 2 - 0.42) }))
+  const usbShell = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.2, 0.48), shell.clone())
+  usbShell.position.set(-0.35, Y0 + 0.1, -BD / 2 - 0.18)
+  root.add(usbShell)
+  const usbPort = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.12, 0.06), mp(0x080810, 0.9, 0.1))
+  usbPort.position.set(-0.35, Y0 + 0.1, -BD / 2 - 0.42)
+  root.add(usbPort)
 }
 
 function sdSlot(root: THREE.Group) {
-  root.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.14, 0.56), mp(0x888888, 0.18, 0.88)),
-    { position: new THREE.Vector3(0.55, Y0 + 0.07, -BD / 2 - 0.18) }))
+  const sd = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.14, 0.56), mp(0x888888, 0.18, 0.88))
+  sd.position.set(0.55, Y0 + 0.07, -BD / 2 - 0.18)
+  root.add(sd)
 }
 
 function ffcConn(root: THREE.Group) {
-  root.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.1, 0.24), mp(0x1a1a1a, 0.8, 0.1)),
-    { position: new THREE.Vector3(0, Y0 + 0.05, BD / 2 + 0.02) }))
+  const ffc = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.1, 0.24), mp(0x1a1a1a, 0.8, 0.1))
+  ffc.position.set(0, Y0 + 0.05, BD / 2 + 0.02)
+  root.add(ffc)
   for (let i = 0; i < 18; i++) {
     const c = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.01, 0.2), copper())
     c.position.set(-0.58 + i * 0.065, Y0 + 0.002, BD / 2 + 0.02); root.add(c)
@@ -288,8 +287,9 @@ function ffcConn(root: THREE.Group) {
 }
 
 function header40pin(root: THREE.Group) {
-  root.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.24, 2.0), mp(0x0d0d0d, 0.9, 0.05)),
-    { position: new THREE.Vector3(1.6, Y0 + 0.12, 0) }))
+  const hdr = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.24, 2.0), mp(0x0d0d0d, 0.9, 0.05))
+  hdr.position.set(1.6, Y0 + 0.12, 0)
+  root.add(hdr)
   for (let row = 0; row < 2; row++) {
     for (let col = 0; col < 20; col++) {
       const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.34, 6), mp(0xd4aa35, 0.08, 0.99))
@@ -609,6 +609,8 @@ function buildTraces(root: THREE.Group, s: State) {
 }
 
 // ─── 修正5/6: Manhattan Routing Particles ─────────────────
+/** Manhattan毎フレーム再利用Vector3 — GC負荷軽減 */
+const tmpVec = new THREE.Vector3()
 /**
  * Manhattan routing: 各パーティクルは
  *   横移動 → 縦移動 → 横移動 → …
@@ -751,10 +753,10 @@ function updateManhattanParticles(dt: number, s: State) {
     }
 
     // 線形補間 (直線移動のみ — Manhattan)
-    const pos = new THREE.Vector3().lerpVectors(p.from, p.to, p.t)
-    s.ptPos![i*3]   = pos.x
-    s.ptPos![i*3+1] = pos.y
-    s.ptPos![i*3+2] = pos.z
+    tmpVec.lerpVectors(p.from, p.to, p.t)
+    s.ptPos![i*3]   = tmpVec.x
+    s.ptPos![i*3+1] = tmpVec.y
+    s.ptPos![i*3+2] = tmpVec.z
     s.ptCol![i*3]   = p.color.r
     s.ptCol![i*3+1] = p.color.g
     s.ptCol![i*3+2] = p.color.b
