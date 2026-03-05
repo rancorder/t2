@@ -416,32 +416,192 @@ function S10() {
   )
 }
 
-// ── Scase1: 開発実績 IOT smart edge ───────────────────────
+// ── SVG: ミニトマト品質検査フロー ─────────────────────────
+function SvgTomato({ run }: { run: boolean }) {
+  return (
+    <svg viewBox="0 0 220 110" className="scase-svg">
+      {/* Camera node */}
+      <rect x="4" y="38" width="44" height="34" rx="4"
+        className={`svgn ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '0.3s' }} />
+      <text x="26" y="52" textAnchor="middle" className="svgt" style={{ animationDelay: '0.3s', opacity: run ? 1 : 0 }}>📷</text>
+      <text x="26" y="65" textAnchor="middle" className="svgl" style={{ animationDelay: '0.3s', opacity: run ? 1 : 0 }}>Camera</text>
+      {/* Arrow 1 */}
+      <line x1="48" y1="55" x2="82" y2="55" stroke="#e8000f" strokeWidth="2"
+        className={`svgarrow ${run ? 'svgarrow-on' : ''}`}
+        style={{ animationDelay: '0.7s' }} />
+      <polygon points="82,50 92,55 82,60" fill="#e8000f"
+        className={`svgarrowhead ${run ? 'svgarrowhead-on' : ''}`}
+        style={{ animationDelay: '0.9s' }} />
+      {/* AI node */}
+      <rect x="92" y="34" width="52" height="42" rx="4"
+        className={`svgn svgn-ai ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '1.0s' }} />
+      <text x="118" y="52" textAnchor="middle" className="svgt" style={{ animationDelay: '1.0s', opacity: run ? 1 : 0 }}>AI</text>
+      <text x="118" y="65" textAnchor="middle" className="svgl" style={{ animationDelay: '1.0s', opacity: run ? 1 : 0 }}>DNN推論</text>
+      {/* Arrow 2 */}
+      <line x1="144" y1="55" x2="160" y2="55" stroke="#e8000f" strokeWidth="2"
+        className={`svgarrow ${run ? 'svgarrow-on' : ''}`}
+        style={{ animationDelay: '1.4s' }} />
+      <polygon points="160,50 170,55 160,60" fill="#e8000f"
+        className={`svgarrowhead ${run ? 'svgarrowhead-on' : ''}`}
+        style={{ animationDelay: '1.6s' }} />
+      {/* OK node */}
+      <rect x="170" y="26" width="46" height="26" rx="4"
+        className={`svgn svgn-ok ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '1.7s' }} />
+      <text x="193" y="44" textAnchor="middle" className="svgt svgt-ok" style={{ animationDelay: '1.7s', opacity: run ? 1 : 0 }}>✓ OK</text>
+      {/* NG node */}
+      <rect x="170" y="60" width="46" height="26" rx="4"
+        className={`svgn svgn-ng ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '1.9s' }} />
+      <text x="193" y="78" textAnchor="middle" className="svgt svgt-ng" style={{ animationDelay: '1.9s', opacity: run ? 1 : 0 }}>✗ NG</text>
+      {/* split lines */}
+      <line x1="170" y1="39" x2="167" y2="39" stroke="rgba(240,236,228,0.15)" strokeWidth="1.5" />
+      <line x1="170" y1="73" x2="167" y2="73" stroke="rgba(240,236,228,0.15)" strokeWidth="1.5" />
+    </svg>
+  )
+}
+
+// ── SVG: 精密部品カウントアップ ───────────────────────────
+function SvgCounter({ run }: { run: boolean }) {
+  const [count, setCount] = useState(0)
+  const [barW, setBarW] = useState(0)
+  useEffect(() => {
+    if (!run) { setCount(0); setBarW(0); return }
+    const target = 1000
+    const dur = 1800
+    const start = performance.now()
+    let raf: number
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / dur, 1)
+      const ease = 1 - Math.pow(1 - t, 3)
+      setCount(Math.round(ease * target))
+      setBarW(ease * 100)
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    const tid = setTimeout(() => { raf = requestAnimationFrame(tick) }, 400)
+    return () => { clearTimeout(tid); cancelAnimationFrame(raf) }
+  }, [run])
+  return (
+    <svg viewBox="0 0 220 110" className="scase-svg">
+      <text x="110" y="30" textAnchor="middle" className="svgcountlabel">PARTS COUNTED</text>
+      <text x="110" y="75" textAnchor="middle" className="svgcount">{count.toLocaleString()}</text>
+      <text x="194" y="75" textAnchor="start" className="svgcountunit">個</text>
+      {/* progress bar */}
+      <rect x="20" y="88" width="180" height="6" rx="3" fill="rgba(240,236,228,0.08)" />
+      <rect x="20" y="88" width={`${barW * 1.8}`} height="6" rx="3" fill="#e8000f" />
+      <text x="110" y="106" textAnchor="middle" className="svgcountlabel">AI高精度カウント — DNN</text>
+    </svg>
+  )
+}
+
+// ── SVG: エアモビリティ センサ収束 ────────────────────────
+function SvgAirMobility({ run }: { run: boolean }) {
+  return (
+    <svg viewBox="0 0 220 130" className="scase-svg">
+      {/* Center board */}
+      <rect x="80" y="45" width="60" height="40" rx="4"
+        className={`svgn svgn-ai ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '0.3s' }} />
+      <text x="110" y="62" textAnchor="middle" className="svgt" style={{ opacity: run ? 1 : 0, animationDelay: '0.3s' }}>BOARD</text>
+      <text x="110" y="76" textAnchor="middle" className="svgl" style={{ opacity: run ? 1 : 0, animationDelay: '0.3s' }}>T² Lab</text>
+      {/* Sensor nodes */}
+      {[
+        { x: 14, y: 10,  label: '高度', delay: '0.6s' },
+        { x: 14, y: 60,  label: '速度', delay: '0.9s' },
+        { x: 14, y: 110, label: '姿勢', delay: '1.2s' },
+      ].map(({ x, y, label, delay }, i) => (
+        <g key={i}>
+          <rect x={x} y={y} width="44" height="24" rx="4"
+            className={`svgn ${run ? 'svgn-on' : ''}`}
+            style={{ animationDelay: delay }} />
+          <text x={x + 22} y={y + 16} textAnchor="middle" className="svgl"
+            style={{ opacity: run ? 1 : 0 }}>{label}</text>
+          {/* line from sensor to board */}
+          <line x1={x + 44} y1={y + 12} x2="80" y2="65" stroke="#e8000f" strokeWidth="1.5"
+            className={`svgline ${run ? 'svgline-on' : ''}`}
+            style={{ animationDelay: delay, '--len': '80' } as React.CSSProperties} />
+        </g>
+      ))}
+      {/* RT label */}
+      <text x="110" y="106"  textAnchor="middle"
+        className={`svgrtlabel ${run ? 'svgrtlabel-on' : ''}`}
+        style={{ animationDelay: '1.8s' }}>REAL-TIME</text>
+    </svg>
+  )
+}
+
+// ── SVG: 車載ゲートウェイ 収束→出力 ─────────────────────
+function SvgGateway({ run }: { run: boolean }) {
+  const protocols = [
+    { label: 'CAN',     y: 24,  color: '#e8000f', delay: '0.4s' },
+    { label: 'CAN-FD',  y: 55,  color: '#ff6b35', delay: '0.7s' },
+    { label: 'Ethernet',y: 86,  color: '#f0c040', delay: '1.0s' },
+  ]
+  return (
+    <svg viewBox="0 0 220 120" className="scase-svg">
+      {protocols.map(({ label, y, color, delay }, i) => (
+        <g key={i}>
+          {/* protocol label box */}
+          <rect x="4" y={y} width="54" height="20" rx="3"
+            className={`svgn ${run ? 'svgn-on' : ''}`}
+            style={{ animationDelay: delay }} />
+          <text x="31" y={y + 14} textAnchor="middle" className="svgl" style={{ fill: color, opacity: run ? 1 : 0 }}>{label}</text>
+          {/* converging line to gateway */}
+          <line x1="58" y1={y + 10} x2="106" y2="60" stroke={color} strokeWidth="1.8"
+            className={`svgline ${run ? 'svgline-on' : ''}`}
+            style={{ animationDelay: delay }} />
+        </g>
+      ))}
+      {/* Gateway box */}
+      <rect x="106" y="44" width="48" height="32" rx="4"
+        className={`svgn svgn-ai ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '1.2s' }} />
+      <text x="130" y="58" textAnchor="middle" className="svgt" style={{ fontSize: '7px', opacity: run ? 1 : 0 }}>Gateway</text>
+      <text x="130" y="70" textAnchor="middle" className="svgl" style={{ opacity: run ? 1 : 0 }}>変換</text>
+      {/* Output arrow */}
+      <line x1="154" y1="60" x2="178" y2="60" stroke="#e8000f" strokeWidth="2.5"
+        className={`svgarrow ${run ? 'svgarrow-on' : ''}`}
+        style={{ animationDelay: '1.6s' }} />
+      <polygon points="178,55 190,60 178,65" fill="#e8000f"
+        className={`svgarrowhead ${run ? 'svgarrowhead-on' : ''}`}
+        style={{ animationDelay: '1.8s' }} />
+      {/* 100G label */}
+      <text x="196" y="52" textAnchor="middle"
+        className={`svgrtlabel ${run ? 'svgrtlabel-on' : ''}`}
+        style={{ animationDelay: '1.9s', fontSize: '11px' }}>100G</text>
+      <text x="196" y="72" textAnchor="middle" className="svgl"
+        style={{ opacity: run ? 1 : 0, animationDelay: '1.9s' }}>Ethernet</text>
+    </svg>
+  )
+}
+
+// ── Scase1: IOT smart edge ─────────────────────────────────
 function Scase1() {
-  const cases = [
+  const [run, setRun] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setRun(true), 300)
+    return () => clearTimeout(t)
+  }, [])
+
+  const cards = [
     {
       tag: '事例 1-1',
       title: 'ミニトマト品質検査システム',
-      partner: '協力：広島大学ナノデバイス研究所',
-      points: [
-        '農作物の良品・不良品を収穫現場や輸送中にリアルタイム判定',
-        'AI（DNN）を用いた熟練者クラスの高精度検出',
-        '小型エッジコンピュータでウェアラブルデバイスと連動',
-      ],
-      metrics: [{ val: 'DNN', label: 'AI推論エンジン' }, { val: 'Edge', label: 'クラウド不要' }, { val: '現場', label: '収穫・輸送中に判定' }],
+      sub: '協力：広島大学ナノデバイス研究所',
+      visual: <SvgTomato run={run} />,
+      points: ['農作物の良品・不良品を収穫現場でリアルタイム判定', 'AI（DNN）で熟練者クラスの検出精度を実現', '小型エッジ設計でウェアラブル連動も可能'],
     },
     {
       tag: '事例 1-3',
-      title: '精密部品 AI生産管理システム',
-      partner: '協力：（有）宮田精工',
-      points: [
-        '数百〜千個の精密部品の数量を AI が自動カウント',
-        'AI（DNN）による高精度計測で人手ミスをゼロ化',
-        'AIエッジコンピュータで処理を高速化・省人化を実現',
-      ],
-      metrics: [{ val: '1000+', label: '部品/回 計測' }, { val: 'DNN', label: '高精度カウント' }, { val: '省人化', label: '自動管理' }],
+      title: '精密部品 AI生産管理',
+      sub: '協力：（有）宮田精工',
+      visual: <SvgCounter run={run} />,
+      points: ['数百〜千個の精密部品を AI が自動カウント', 'DNN計測で人手ミスをゼロ化', 'エッジ処理で高速化・省人化を実現'],
     },
   ]
+
   return (
     <div className="scase-inner">
       <div>
@@ -449,60 +609,50 @@ function Scase1() {
         <h2 className="scase-h r">AIで<span className="acc">現場の問題</span>を解決した実績</h2>
       </div>
       <div className="scase-grid r">
-        {cases.map((c, i) => (
+        {cards.map((c, i) => (
           <div className="scase-card" key={i}>
             <div className="scase-card-tag">{c.tag}</div>
             <div className="scase-card-title">{c.title}</div>
-            <div className="scase-card-partner">{c.partner}</div>
+            <div className="scase-card-partner">{c.sub}</div>
+            <div className="scase-visual">{c.visual}</div>
             <ul className="scase-points">
-              {c.points.map((p, j) => (
-                <li key={j}>{p}</li>
-              ))}
+              {c.points.map((p, j) => <li key={j}>{p}</li>)}
             </ul>
-            <div className="scase-metrics">
-              {c.metrics.map((m, j) => (
-                <div className="scase-metric" key={j}>
-                  <div className="scase-metric-val">{m.val}</div>
-                  <div className="scase-metric-label">{m.label}</div>
-                </div>
-              ))}
-            </div>
           </div>
         ))}
       </div>
       <div className="scase-footer r">
-        いずれも<span className="acc">　制約条件の中で成立するライン　</span>を設計した結果
+        いずれも<span className="acc">　制約の中で成立するライン　</span>を設計した結果
       </div>
     </div>
   )
 }
 
-// ── Scase2: 開発実績 Mobility ──────────────────────────────
+// ── Scase2: Mobility ───────────────────────────────────────
 function Scase2() {
-  const cases = [
+  const [run, setRun] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setRun(true), 300)
+    return () => clearTimeout(t)
+  }, [])
+
+  const cards = [
     {
       tag: '事例 2-2',
-      title: 'エアモビリティ向け フライトコントローラ',
-      size: '140 × 104 mm',
-      points: [
-        'エアモビリティの飛行制御・高度・速度・姿勢をリアルタイム制御',
-        '各種センサデータを高速取得・処理する高機能設計',
-        '小型エアモビリティへの搭載を想定した小型・低消費電力設計',
-      ],
-      metrics: [{ val: 'RT', label: 'リアルタイム制御' }, { val: '小型', label: '140×104mm' }, { val: '低電力', label: 'モビリティ搭載' }],
+      title: 'エアモビリティ用 フライトコントローラ',
+      sub: '140 × 104 mm',
+      visual: <SvgAirMobility run={run} />,
+      points: ['飛行制御・高度・速度・姿勢をリアルタイム制御', '各種センサデータを高速取得・処理', '小型エアモビリティ搭載を想定した低消費電力設計'],
     },
     {
       tag: '事例 2-3',
       title: '車載ネットワーク セントラルゲートウェイ',
-      size: '140 × 120 mm',
-      points: [
-        '1台で全車載ネットワークをサポートするセントラルゲートウェイ',
-        'CAN / CAN-FD / Ethernet の各通信規格を相互変換',
-        '100Gbps Ethernet 対応の超高速通信を実現',
-      ],
-      metrics: [{ val: '100G', label: 'Ethernet対応' }, { val: '3規格', label: 'CAN/CAN-FD/ETH' }, { val: '1台', label: '全NW統合' }],
+      sub: '140 × 120 mm',
+      visual: <SvgGateway run={run} />,
+      points: ['1台でCAN / CAN-FD / Ethernetを相互変換', '100Gbps Ethernet 対応の超高速通信', 'セントラルGWとして全車載NWを統合'],
     },
   ]
+
   return (
     <div className="scase-inner">
       <div>
@@ -510,24 +660,15 @@ function Scase2() {
         <h2 className="scase-h r">高難度領域の<span className="acc">設計実績</span></h2>
       </div>
       <div className="scase-grid r">
-        {cases.map((c, i) => (
+        {cards.map((c, i) => (
           <div className="scase-card" key={i}>
             <div className="scase-card-tag">{c.tag}</div>
             <div className="scase-card-title">{c.title}</div>
-            <div className="scase-card-partner">{c.size}</div>
+            <div className="scase-card-partner">{c.sub}</div>
+            <div className="scase-visual">{c.visual}</div>
             <ul className="scase-points">
-              {c.points.map((p, j) => (
-                <li key={j}>{p}</li>
-              ))}
+              {c.points.map((p, j) => <li key={j}>{p}</li>)}
             </ul>
-            <div className="scase-metrics">
-              {c.metrics.map((m, j) => (
-                <div className="scase-metric" key={j}>
-                  <div className="scase-metric-val">{m.val}</div>
-                  <div className="scase-metric-label">{m.label}</div>
-                </div>
-              ))}
-            </div>
           </div>
         ))}
       </div>
