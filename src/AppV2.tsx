@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import BgCanvas from './BgCanvas'
+import PCBHero from './PCBHero'
 import './AppV2.css'
 
 // ── GSAP dynamic import ───────────────────────────────────────
@@ -396,25 +397,35 @@ export default function AppV2() {
 
         {/* ── 01 HERO ── */}
         <section className="v2-hero">
-          <div className="v2-hero-eyebrow">T² LABORATORY — EDGE COMPUTER DESIGN</div>
-          <div className="v2-hero-pain">
-            <div className="v2-hero-pain-line">「仕様が固まらない…」</div>
-            <div className="v2-hero-pain-line accent">「制約が衝突する設計、どう抜けるか？」</div>
-            <div className="v2-hero-pain-line">「試作を繰り返すたびにコストが膨らむ」</div>
+          {/* PCB 3D background — fills entire hero */}
+          <PCBHero />
+
+          {/* Dark gradient vignette so text stays readable */}
+          <div className="v2-hero-vignette" />
+
+          {/* Text content — above canvas */}
+          <div className="v2-hero-content">
+            <div className="v2-hero-eyebrow">T² LABORATORY — EDGE COMPUTER DESIGN</div>
+            <div className="v2-hero-pain">
+              <div className="v2-hero-pain-line">「仕様が固まらない…」</div>
+              <div className="v2-hero-pain-line accent">「制約が衝突する設計、どう抜けるか？」</div>
+              <div className="v2-hero-pain-line">「試作を繰り返すたびにコストが膨らむ」</div>
+            </div>
+            <div className="v2-hero-divider" ref={heroTitleRef} />
+            <div className="v2-hero-title">
+              T²は<span className="c">成立ライン</span>を<br />
+              <span className="g">設計する</span>
+            </div>
+            <div className="v2-hero-desc">
+              性能・電力・サイズが衝突する設計課題を、世界最小クラスの実績と最新Embedded Technologyで解決します。
+            </div>
+            <div className="v2-hero-ctas">
+              <button className="v2-btn v2-btn-primary" onClick={() => scrollTo('diag')}>制約を診断する →</button>
+              <button className="v2-btn v2-btn-outline" onClick={() => scrollTo('cases')}>開発事例を見る</button>
+              <a href="mailto:info@t2-laboratory.com" className="v2-btn v2-btn-ghost">問い合わせ</a>
+            </div>
           </div>
-          <div className="v2-hero-divider" ref={heroTitleRef} />
-          <div className="v2-hero-title">
-            T²は<span className="c">成立ライン</span>を<br />
-            <span className="g">設計する</span>
-          </div>
-          <div className="v2-hero-desc">
-            性能・電力・サイズが衝突する設計課題を、世界最小クラスの実績と最新Embedded Technologyで解決します。
-          </div>
-          <div className="v2-hero-ctas">
-            <button className="v2-btn v2-btn-primary" onClick={() => scrollTo('diag')}>制約を診断する →</button>
-            <button className="v2-btn v2-btn-outline" onClick={() => scrollTo('cases')}>開発事例を見る</button>
-            <a href="mailto:info@t2-laboratory.com" className="v2-btn v2-btn-ghost">問い合わせ</a>
-          </div>
+
           <div className="v2-scroll-ind">
             <div className="v2-scroll-line" />
             <span>SCROLL</span>
