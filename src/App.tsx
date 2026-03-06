@@ -2,16 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import PCBViewer from './PCBViewer'
 import './App.css'
 
-// ─────────────────────────────────────────────────────────
-// TOTAL SLIDES: 16
-// [S1new, S2, S3, S4c, S4, ScTA1, S5, S6, S7, S8, S9, S10, Scase1, Scase2, Sdiagnosis, S11new]
-// ─────────────────────────────────────────────────────────
-const TOTAL = 16
-const LABELS = [
-  'INTRO','PAIN','TRADE-OFF','DESIGN-CONFLICT','PROBLEM',
-  'CTA','RESULT','SOLUTION','DESIGN','ROLE',
-  'EFFECT','FIELDS','CASES-IOT','CASES-MOBILITY','DIAGNOSIS','CLOSE'
-]
+const TOTAL = 14
+const LABELS = ['INTRO','PAIN','TRADE-OFF','DESIGN-CONFLICT','PROBLEM','RESULT','SOLUTION','DESIGN','ROLE','EFFECT','FIELDS','CASES-IOT','CASES-MOBILITY','CLOSE']
 
 type Dir = 'fwd' | 'bwd'
 interface SlideState {
@@ -21,46 +13,27 @@ interface SlideState {
   busy: boolean
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 1 — NEW FIRSTVIEW (問いかけ型)
-// 暗転 → 光のライン交差 → 「T²は成立ラインを設計する」
-// ══════════════════════════════════════════════════════════
+// ── individual slides ──────────────────────────────────────
+
 function S1() {
   return (
     <>
       <div className="s1-bg">
-        {/* 光ラインエフェクト */}
-        <div className="s1-light-h" />
-        <div className="s1-light-v" />
-        <div className="s1-light-h2" />
-        <div className="s1-glow" />
-        <div className="s1-grid" />
+        <div className="s1-slash" />
+        <div className="s1-slash2" />
+        <div className="s1-big r">止まる</div>
       </div>
       <div className="s1-content">
         <div className="s1-eyebrow r">T²LABORATORY — EDGE COMPUTER DESIGN SERVICE</div>
-        {/* 問いかけ型 firstview */}
-        <div className="s1-question-wrap">
-          <div className="s1-q1 r">
-            <span className="s1-q-quote">「</span>仕様が固まらない…<span className="s1-q-quote">」</span>
-          </div>
-          <div className="s1-q2 r">
-            <span className="s1-q-quote">「</span>制約が衝突する設計、どう抜けるか？<span className="s1-q-quote">」</span>
-          </div>
-        </div>
-        <div className="s1-divider r">
-          <div className="s1-divider-line" />
-          <div className="s1-divider-dot" />
-          <div className="s1-divider-line" />
-        </div>
-        <div className="s1-answer r">
-          T²は<span className="acc">成立ラインを設計</span>する
-        </div>
+        <div className="s1-line1 r">製品開発が</div>
+        <div className="s1-line2 r">止まる</div>
+        <div className="s1-line3 r">瞬間</div>
         <div className="s1-tags r">
           <span className="s1-tag">AI</span>
           <span className="s1-tag">IoT</span>
           <span className="s1-tag">モビリティ</span>
-          <span className="s1-tag">組込み</span>
         </div>
+        <p className="s1-sub r">機能が増えるほど<br /><strong>設計は難しくなる</strong></p>
         <div className="s1-hint r">
           <span className="s1-hint-dot" />キー / スワイプ / タップで進む
         </div>
@@ -69,9 +42,6 @@ function S1() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 2 — PAIN
-// ══════════════════════════════════════════════════════════
 function S2() {
   return (
     <div className="s2-inner">
@@ -97,9 +67,6 @@ function S2() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 3 — TRADE-OFF
-// ══════════════════════════════════════════════════════════
 function S3() {
   return (
     <div className="s3-inner">
@@ -126,8 +93,7 @@ function S3() {
               <animateTransform attributeName="transform" type="rotate"
                 from="0 200 184" to="360 200 184" dur="90s" repeatCount="indefinite" />
             </polygon>
-            <polygon points="200,52 38,316 362,316"
-              fill="none" stroke="url(#tg1)" strokeWidth="20" opacity=".04" />
+            <polygon points="200,52 38,316 362,316" fill="none" stroke="url(#tg1)" strokeWidth="20" opacity=".04" />
           </svg>
           <div className="tri-n top"><div className="tri-n-icon">🏎️</div><div className="tri-n-name">高性能</div><div className="tri-n-en">HIGH PERF</div></div>
           <div className="tri-n bl"><div className="tri-n-icon">📦</div><div className="tri-n-name">小型</div><div className="tri-n-en">COMPACT</div></div>
@@ -139,22 +105,40 @@ function S3() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 4c — DESIGN CONFLICT
-// ══════════════════════════════════════════════════════════
+// ── S4c DESIGN CONFLICT ────────────────────────────────────
 function S4c() {
   const cases = [
-    { num:'01', title:'性能を上げる', steps:['GPUを搭載','消費電力が設計上限を超える'], result:'冷却設計が成立しない' },
-    { num:'02', title:'省電力化', steps:['CPUクロックを下げる','AI推論速度が不足'], result:'要求性能を満たせない' },
-    { num:'03', title:'小型化', steps:['筐体サイズを縮小','放熱スペース不足'], result:'熱設計が成立しない' },
+    {
+      num: '01',
+      title: '性能を上げる',
+      steps: ['GPUを搭載', '消費電力が設計上限を超える'],
+      result: '冷却設計が成立しない',
+    },
+    {
+      num: '02',
+      title: '省電力化',
+      steps: ['CPUクロックを下げる', 'AI推論速度が不足'],
+      result: '要求性能を満たせない',
+    },
+    {
+      num: '03',
+      title: '小型化',
+      steps: ['筐体サイズを縮小', '放熱スペース不足'],
+      result: '熱設計が成立しない',
+    },
   ]
   return (
     <div className="s4c-inner">
       <div>
         <div className="lbl r">DESIGN CONFLICT</div>
-        <h2 className="s4c-h r">設計は<br /><span className="acc">「成立ライン」</span>を<br />探す作業</h2>
+        <h2 className="s4c-h r">
+          設計は<br />
+          <span className="acc">「成立ライン」</span>を<br />
+          探す作業
+        </h2>
         <p className="s4c-sub r">多くの開発は性能・電力・サイズの衝突で止まる</p>
       </div>
+
       <div className="conflict-grid r">
         {cases.map((c, i) => (
           <div className="conflict-card" key={i}>
@@ -172,17 +156,20 @@ function S4c() {
           </div>
         ))}
       </div>
+
       <div className="s4c-footer r">
-        <div className="s4c-msg">設計はスペックを上げる作業ではない<br /><strong>成立するラインを見つける作業</strong></div>
-        <div className="s4c-cta">その成立ラインを設計するのが<span className="acc">　T²</span></div>
+        <div className="s4c-msg">
+          設計はスペックを上げる作業ではない<br />
+          <strong>成立するラインを見つける作業</strong>
+        </div>
+        <div className="s4c-cta">
+          その成立ラインを設計するのが<span className="acc">　T²</span>
+        </div>
       </div>
     </div>
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 4 — PROBLEM (accordion)
-// ══════════════════════════════════════════════════════════
 function S4() {
   const [open, setOpen] = useState<number | null>(null)
   const items = [
@@ -214,35 +201,6 @@ function S4() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 5.5 — ScTA1 (CTA intercept #1)
-// ══════════════════════════════════════════════════════════
-function ScTA1() {
-  return (
-    <div className="scta-wrap">
-      <div className="scta-bg-pulse" />
-      <div className="scta-label r">— 設計の詰まりに覚えがありますか？ —</div>
-      <h2 className="scta-h r">T²に制約を<span className="acc">診断</span>してもらう</h2>
-      <p className="scta-sub r">5問で分かる、あなたの設計ボトルネック</p>
-      <div className="scta-btns r">
-        <a className="scta-btn-primary" href="mailto:info@t2-laboratory.com?subject=制約診断の依頼">
-          <span>🔍</span> 制約診断ツール（5問・無料）
-        </a>
-        <a className="scta-btn-sec" href="https://calendly.com" target="_blank" rel="noreferrer">
-          <span>📅</span> 30分Zoom無料相談
-        </a>
-        <a className="scta-btn-sec" href="https://slack.com" target="_blank" rel="noreferrer">
-          <span>💬</span> Slackで問い合わせ
-        </a>
-      </div>
-      <div className="scta-note r">※ 次のスライドから解決フローをご覧ください →</div>
-    </div>
-  )
-}
-
-// ══════════════════════════════════════════════════════════
-// SLIDE 5 — RESULT
-// ══════════════════════════════════════════════════════════
 function S5() {
   const items = [
     { num:'01', icon:'🔄', text:'試作の繰り返し' },
@@ -263,6 +221,7 @@ function S5() {
           </div>
         ))}
       </div>
+      {/* 修正2: T²の立場を明確にする1文 */}
       <div className="s5-partner r">
         だから<span className="acc">　設計の成立ラインを決める　</span>設計パートナーが必要になる
       </div>
@@ -270,14 +229,12 @@ function S5() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 6 — SOLUTION (PCBViewer)
-// ══════════════════════════════════════════════════════════
 function S6() {
   return (
     <div className="s6-inner">
       <div className="s6-info">
         <div className="lbl r">SOLUTION</div>
+        {/* 修正1: 営業コピー → エンジニア向け制約条件型タイトル */}
         <h2 className="s6-h r">この条件で成立する<br /><span className="acc">AIエッジ設計</span></h2>
         <div className="s6-subtitle r">38×34mm　3W以内　100FPS AI推論</div>
         <div className="s6-specs r">
@@ -313,15 +270,13 @@ function S6() {
       </div>
       <div className="s6-canvas">
         <PCBViewer />
+        {/* 修正8: AI推論データフロー可視化テキスト */}
         <div className="s6-canvas-label">AI推論データフローを可視化</div>
       </div>
     </div>
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 7 — DESIGN AREAS
-// ══════════════════════════════════════════════════════════
 function S7() {
   const items = [
     { icon:'⚡', title:'電子回路設計', desc:'アナログ・デジタル回路、電源設計、ギガビット高速インターフェイス、基板レイアウト。EMC対策から熱設計まで量産を見据えた設計。', num:'01' },
@@ -333,6 +288,7 @@ function S7() {
     <div className="s7-inner">
       <div>
         <div className="lbl r">DESIGN AREAS</div>
+{/* 修正3: タイトル変更 */}
         <h2 className="s7-h r">T²が解決する<span className="acc">設計領域</span></h2>
       </div>
       <div className="da-rows">
@@ -358,15 +314,13 @@ function S7() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 8 — ROLE
-// ══════════════════════════════════════════════════════════
 function S8() {
   return (
     <div className="s8-inner">
       <div className="s8-left">
         <div className="lbl r">ROLE</div>
         <h2 className="s8-h r">T²の<span className="acc">役割</span></h2>
+{/* 修正4: コピー変更 */}
         <div className="s8-sub r">成立ラインを決める設計</div>
         <div className="s8-msg-main r">トレードオフを<br /><span>設計する</span></div>
         <div className="s8-msg-sub r">最適な成立ラインを、<br />経験と技術で導き出す</div>
@@ -392,9 +346,6 @@ function S8() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 9 — EFFECT (Before/After)
-// ══════════════════════════════════════════════════════════
 function S9() {
   const bef = ['設計判断できない','試作を繰り返す','開発期間が伸びる','コストが膨らむ','専門人材不足']
   const aft = ['設計判断ができる','試作回数を削減','開発期間を短縮','コストを削減','専門人材も不要に']
@@ -436,9 +387,6 @@ function S9() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 10 — FIELDS
-// ══════════════════════════════════════════════════════════
 function S10() {
   const fields = [
     { icon:'📡', name:'IoT', detail:'センサ端末 / ウェアラブル / 無線タグ' },
@@ -468,233 +416,269 @@ function S10() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SVG helpers for case studies
-// ══════════════════════════════════════════════════════════
+// ── SVG: ミニトマト品質検査フロー ─────────────────────────
 function SvgTomato({ run }: { run: boolean }) {
   return (
     <svg viewBox="0 0 220 110" className="scase-svg">
+      {/* Camera node */}
       <rect x="4" y="38" width="44" height="34" rx="4"
-        className={`svgn ${run ? 'svgn-on' : ''}`} style={{ animationDelay: '0.3s' }} />
+        className={`svgn ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '0.3s' }} />
       <text x="26" y="52" textAnchor="middle" className="svgt" style={{ animationDelay: '0.3s', opacity: run ? 1 : 0 }}>📷</text>
       <text x="26" y="65" textAnchor="middle" className="svgl" style={{ animationDelay: '0.3s', opacity: run ? 1 : 0 }}>Camera</text>
+      {/* Arrow 1 */}
       <line x1="48" y1="55" x2="82" y2="55" stroke="#e8000f" strokeWidth="2"
-        className={`svgarrow ${run ? 'svgarrow-on' : ''}`} style={{ animationDelay: '0.7s' }} />
+        className={`svgarrow ${run ? 'svgarrow-on' : ''}`}
+        style={{ animationDelay: '0.7s' }} />
       <polygon points="82,50 92,55 82,60" fill="#e8000f"
-        style={{ opacity: run ? 1 : 0, animationDelay: '0.7s' }} />
-      <rect x="92" y="34" width="52" height="42" rx="6"
-        className={`svgn ${run ? 'svgn-on' : ''}`} style={{ animationDelay: '1.1s' }} />
-      <text x="118" y="52" textAnchor="middle" className="svgt" style={{ animationDelay: '1.1s', opacity: run ? 1 : 0 }}>🤖</text>
-      <text x="118" y="66" textAnchor="middle" className="svgl" style={{ animationDelay: '1.1s', opacity: run ? 1 : 0 }}>AI Edge</text>
-      <line x1="144" y1="55" x2="178" y2="55" stroke="#00c864" strokeWidth="2"
-        style={{ opacity: run ? 1 : 0, animationDelay: '1.5s' }} />
-      <polygon points="178,50 188,55 178,60" fill="#00c864"
-        style={{ opacity: run ? 1 : 0, animationDelay: '1.5s' }} />
-      <rect x="188" y="38" width="28" height="34" rx="4"
-        className={`svgn ${run ? 'svgn-on svgn-ok' : ''}`} style={{ animationDelay: '1.8s' }} />
-      <text x="202" y="59" textAnchor="middle" className="svgl" style={{ animationDelay: '1.8s', opacity: run ? 1 : 0, fontSize: 9 }}>OK</text>
+        className={`svgarrowhead ${run ? 'svgarrowhead-on' : ''}`}
+        style={{ animationDelay: '0.9s' }} />
+      {/* AI node */}
+      <rect x="92" y="34" width="52" height="42" rx="4"
+        className={`svgn svgn-ai ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '1.0s' }} />
+      <text x="118" y="52" textAnchor="middle" className="svgt" style={{ animationDelay: '1.0s', opacity: run ? 1 : 0 }}>AI</text>
+      <text x="118" y="65" textAnchor="middle" className="svgl" style={{ animationDelay: '1.0s', opacity: run ? 1 : 0 }}>DNN推論</text>
+      {/* Arrow 2 */}
+      <line x1="144" y1="55" x2="160" y2="55" stroke="#e8000f" strokeWidth="2"
+        className={`svgarrow ${run ? 'svgarrow-on' : ''}`}
+        style={{ animationDelay: '1.4s' }} />
+      <polygon points="160,50 170,55 160,60" fill="#e8000f"
+        className={`svgarrowhead ${run ? 'svgarrowhead-on' : ''}`}
+        style={{ animationDelay: '1.6s' }} />
+      {/* OK node */}
+      <rect x="170" y="26" width="46" height="26" rx="4"
+        className={`svgn svgn-ok ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '1.7s' }} />
+      <text x="193" y="44" textAnchor="middle" className="svgt svgt-ok" style={{ animationDelay: '1.7s', opacity: run ? 1 : 0 }}>✓ OK</text>
+      {/* NG node */}
+      <rect x="170" y="60" width="46" height="26" rx="4"
+        className={`svgn svgn-ng ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '1.9s' }} />
+      <text x="193" y="78" textAnchor="middle" className="svgt svgt-ng" style={{ animationDelay: '1.9s', opacity: run ? 1 : 0 }}>✗ NG</text>
+      {/* split lines */}
+      <line x1="170" y1="39" x2="167" y2="39" stroke="rgba(240,236,228,0.15)" strokeWidth="1.5" />
+      <line x1="170" y1="73" x2="167" y2="73" stroke="rgba(240,236,228,0.15)" strokeWidth="1.5" />
     </svg>
   )
 }
 
-function SvgMobility({ run }: { run: boolean }) {
+// ── SVG: 精密部品カウントアップ ───────────────────────────
+function SvgCounter({ run }: { run: boolean }) {
+  const [count, setCount] = useState(0)
+  const [barW, setBarW] = useState(0)
+  useEffect(() => {
+    if (!run) { setCount(0); setBarW(0); return }
+    const target = 1000
+    const dur = 1800
+    const start = performance.now()
+    let raf: number
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / dur, 1)
+      const ease = 1 - Math.pow(1 - t, 3)
+      setCount(Math.round(ease * target))
+      setBarW(ease * 100)
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    const tid = setTimeout(() => { raf = requestAnimationFrame(tick) }, 400)
+    return () => { clearTimeout(tid); cancelAnimationFrame(raf) }
+  }, [run])
   return (
     <svg viewBox="0 0 220 110" className="scase-svg">
-      <rect x="4" y="36" width="44" height="38" rx="4"
-        className={`svgn ${run ? 'svgn-on' : ''}`} style={{ animationDelay: '0.3s' }} />
-      <text x="26" y="52" textAnchor="middle" className="svgt" style={{ animationDelay: '0.3s', opacity: run ? 1 : 0 }}>📡</text>
-      <text x="26" y="67" textAnchor="middle" className="svgl" style={{ animationDelay: '0.3s', opacity: run ? 1 : 0 }}>Sensor</text>
-      <line x1="48" y1="55" x2="82" y2="55" stroke="#e8000f" strokeWidth="2"
-        style={{ opacity: run ? 1 : 0, animationDelay: '0.7s' }} />
-      <rect x="82" y="32" width="56" height="46" rx="6"
-        className={`svgn ${run ? 'svgn-on' : ''}`} style={{ animationDelay: '1.0s' }} />
-      <text x="110" y="52" textAnchor="middle" className="svgt" style={{ animationDelay: '1.0s', opacity: run ? 1 : 0 }}>💾</text>
-      <text x="110" y="67" textAnchor="middle" className="svgl" style={{ animationDelay: '1.0s', opacity: run ? 1 : 0 }}>FPGA</text>
-      <line x1="138" y1="55" x2="172" y2="55" stroke="#00c864" strokeWidth="2"
-        style={{ opacity: run ? 1 : 0, animationDelay: '1.4s' }} />
-      <rect x="172" y="36" width="44" height="38" rx="4"
-        className={`svgn ${run ? 'svgn-on svgn-ok' : ''}`} style={{ animationDelay: '1.7s' }} />
-      <text x="194" y="52" textAnchor="middle" className="svgt" style={{ animationDelay: '1.7s', opacity: run ? 1 : 0 }}>🚗</text>
-      <text x="194" y="67" textAnchor="middle" className="svgl" style={{ animationDelay: '1.7s', opacity: run ? 1 : 0 }}>Drive</text>
+      <text x="110" y="30" textAnchor="middle" className="svgcountlabel">PARTS COUNTED</text>
+      <text x="110" y="75" textAnchor="middle" className="svgcount">{count.toLocaleString()}</text>
+      <text x="194" y="75" textAnchor="start" className="svgcountunit">個</text>
+      {/* progress bar */}
+      <rect x="20" y="88" width="180" height="6" rx="3" fill="rgba(240,236,228,0.08)" />
+      <rect x="20" y="88" width={`${barW * 1.8}`} height="6" rx="3" fill="#e8000f" />
+      <text x="110" y="106" textAnchor="middle" className="svgcountlabel">AI高精度カウント — DNN</text>
     </svg>
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 12 — CASE 1: IoT
-// ══════════════════════════════════════════════════════════
+// ── SVG: エアモビリティ センサ収束 ────────────────────────
+function SvgAirMobility({ run }: { run: boolean }) {
+  return (
+    <svg viewBox="0 0 220 130" className="scase-svg">
+      {/* Center board */}
+      <rect x="80" y="45" width="60" height="40" rx="4"
+        className={`svgn svgn-ai ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '0.3s' }} />
+      <text x="110" y="62" textAnchor="middle" className="svgt" style={{ opacity: run ? 1 : 0, animationDelay: '0.3s' }}>BOARD</text>
+      <text x="110" y="76" textAnchor="middle" className="svgl" style={{ opacity: run ? 1 : 0, animationDelay: '0.3s' }}>T² Lab</text>
+      {/* Sensor nodes */}
+      {[
+        { x: 14, y: 10,  label: '高度', delay: '0.6s' },
+        { x: 14, y: 60,  label: '速度', delay: '0.9s' },
+        { x: 14, y: 110, label: '姿勢', delay: '1.2s' },
+      ].map(({ x, y, label, delay }, i) => (
+        <g key={i}>
+          <rect x={x} y={y} width="44" height="24" rx="4"
+            className={`svgn ${run ? 'svgn-on' : ''}`}
+            style={{ animationDelay: delay }} />
+          <text x={x + 22} y={y + 16} textAnchor="middle" className="svgl"
+            style={{ opacity: run ? 1 : 0 }}>{label}</text>
+          {/* line from sensor to board */}
+          <line x1={x + 44} y1={y + 12} x2="80" y2="65" stroke="#e8000f" strokeWidth="1.5"
+            className={`svgline ${run ? 'svgline-on' : ''}`}
+            style={{ animationDelay: delay, '--len': '80' } as React.CSSProperties} />
+        </g>
+      ))}
+      {/* RT label */}
+      <text x="110" y="106"  textAnchor="middle"
+        className={`svgrtlabel ${run ? 'svgrtlabel-on' : ''}`}
+        style={{ animationDelay: '1.8s' }}>REAL-TIME</text>
+    </svg>
+  )
+}
+
+// ── SVG: 車載ゲートウェイ 収束→出力 ─────────────────────
+function SvgGateway({ run }: { run: boolean }) {
+  const protocols = [
+    { label: 'CAN',     y: 24,  color: '#e8000f', delay: '0.4s' },
+    { label: 'CAN-FD',  y: 55,  color: '#ff6b35', delay: '0.7s' },
+    { label: 'Ethernet',y: 86,  color: '#f0c040', delay: '1.0s' },
+  ]
+  return (
+    <svg viewBox="0 0 220 120" className="scase-svg">
+      {protocols.map(({ label, y, color, delay }, i) => (
+        <g key={i}>
+          {/* protocol label box */}
+          <rect x="4" y={y} width="54" height="20" rx="3"
+            className={`svgn ${run ? 'svgn-on' : ''}`}
+            style={{ animationDelay: delay }} />
+          <text x="31" y={y + 14} textAnchor="middle" className="svgl" style={{ fill: color, opacity: run ? 1 : 0 }}>{label}</text>
+          {/* converging line to gateway */}
+          <line x1="58" y1={y + 10} x2="106" y2="60" stroke={color} strokeWidth="1.8"
+            className={`svgline ${run ? 'svgline-on' : ''}`}
+            style={{ animationDelay: delay }} />
+        </g>
+      ))}
+      {/* Gateway box */}
+      <rect x="106" y="44" width="48" height="32" rx="4"
+        className={`svgn svgn-ai ${run ? 'svgn-on' : ''}`}
+        style={{ animationDelay: '1.2s' }} />
+      <text x="130" y="58" textAnchor="middle" className="svgt" style={{ fontSize: '7px', opacity: run ? 1 : 0 }}>Gateway</text>
+      <text x="130" y="70" textAnchor="middle" className="svgl" style={{ opacity: run ? 1 : 0 }}>変換</text>
+      {/* Output arrow */}
+      <line x1="154" y1="60" x2="178" y2="60" stroke="#e8000f" strokeWidth="2.5"
+        className={`svgarrow ${run ? 'svgarrow-on' : ''}`}
+        style={{ animationDelay: '1.6s' }} />
+      <polygon points="178,55 190,60 178,65" fill="#e8000f"
+        className={`svgarrowhead ${run ? 'svgarrowhead-on' : ''}`}
+        style={{ animationDelay: '1.8s' }} />
+      {/* 100G label */}
+      <text x="196" y="52" textAnchor="middle"
+        className={`svgrtlabel ${run ? 'svgrtlabel-on' : ''}`}
+        style={{ animationDelay: '1.9s', fontSize: '11px' }}>100G</text>
+      <text x="196" y="72" textAnchor="middle" className="svgl"
+        style={{ opacity: run ? 1 : 0, animationDelay: '1.9s' }}>Ethernet</text>
+    </svg>
+  )
+}
+
+// ── Scase1: IOT smart edge ─────────────────────────────────
 function Scase1() {
   const [run, setRun] = useState(false)
   useEffect(() => {
-    const t = setTimeout(() => setRun(true), 600)
+    const t = setTimeout(() => setRun(true), 300)
     return () => clearTimeout(t)
   }, [])
+
+  const cards = [
+    {
+      tag: '事例 1-1',
+      title: 'ミニトマト品質検査システム',
+      sub: '協力：広島大学ナノデバイス研究所',
+      visual: <SvgTomato run={run} />,
+      points: ['農作物の良品・不良品を収穫現場でリアルタイム判定', 'AI（DNN）で熟練者クラスの検出精度を実現', '小型エッジ設計でウェアラブル連動も可能'],
+    },
+    {
+      tag: '事例 1-3',
+      title: '精密部品 AI生産管理',
+      sub: '協力：（有）宮田精工',
+      visual: <SvgCounter run={run} />,
+      points: ['数百〜千個の精密部品を AI が自動カウント', 'DNN計測で人手ミスをゼロ化', 'エッジ処理で高速化・省人化を実現'],
+    },
+  ]
+
   return (
-    <div className="scase-wrap">
-      <div className="scase-tag r">CASE 01 — IoT / 農業</div>
-      <h2 className="scase-h r">ミニトマト品質検査<br /><span className="acc">AIビジョンシステム</span></h2>
-      <div className="scase-cols r">
-        <div className="scase-col scase-bef">
-          <div className="scase-col-label">BEFORE</div>
-          <ul className="scase-list">
-            <li>目視検査で精度ばらつき</li>
-            <li>夜間稼働できない</li>
-            <li>熟練工への依存</li>
-          </ul>
-        </div>
-        <div className="scase-arrow">→</div>
-        <div className="scase-col scase-aft">
-          <div className="scase-col-label">AFTER</div>
-          <ul className="scase-list">
-            <li>AI判定で<strong>精度98%</strong></li>
-            <li>24時間連続稼働</li>
-            <li><strong>1W以下</strong>・バッテリー駆動</li>
-          </ul>
-        </div>
+    <div className="scase-inner">
+      <div>
+        <div className="lbl r">CASES — IOT SMART EDGE</div>
+        <h2 className="scase-h r">AIで<span className="acc">現場の問題</span>を解決した実績</h2>
       </div>
-      <div className="scase-flow r">
-        <SvgTomato run={run} />
+      <div className="scase-grid r">
+        {cards.map((c, i) => (
+          <div className="scase-card" key={i}>
+            <div className="scase-card-tag">{c.tag}</div>
+            <div className="scase-card-title">{c.title}</div>
+            <div className="scase-card-partner">{c.sub}</div>
+            <div className="scase-visual">{c.visual}</div>
+            <ul className="scase-points">
+              {c.points.map((p, j) => <li key={j}>{p}</li>)}
+            </ul>
+          </div>
+        ))}
       </div>
-      <div className="scase-spec r">
-        <span className="scase-spec-item">🔲 38×34mm</span>
-        <span className="scase-spec-item">⚡ 0.8W駆動</span>
-        <span className="scase-spec-item">🧠 100FPS推論</span>
-        <span className="scase-spec-item">📐 量産対応</span>
+      <div className="scase-footer r">
+        いずれも<span className="acc">　制約の中で成立するライン　</span>を設計した結果
       </div>
     </div>
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 13 — CASE 2: Mobility
-// ══════════════════════════════════════════════════════════
+// ── Scase2: Mobility ───────────────────────────────────────
 function Scase2() {
   const [run, setRun] = useState(false)
   useEffect(() => {
-    const t = setTimeout(() => setRun(true), 600)
+    const t = setTimeout(() => setRun(true), 300)
     return () => clearTimeout(t)
   }, [])
-  return (
-    <div className="scase-wrap">
-      <div className="scase-tag r">CASE 02 — モビリティ</div>
-      <h2 className="scase-h r">自動車向け<br /><span className="acc">エッジAI制御ユニット</span></h2>
-      <div className="scase-cols r">
-        <div className="scase-col scase-bef">
-          <div className="scase-col-label">BEFORE</div>
-          <ul className="scase-list">
-            <li>クラウド依存で遅延100ms超</li>
-            <li>通信断絶でシステム停止</li>
-            <li>消費電力の設計上限超過</li>
-          </ul>
-        </div>
-        <div className="scase-arrow">→</div>
-        <div className="scase-col scase-aft">
-          <div className="scase-col-label">AFTER</div>
-          <ul className="scase-list">
-            <li>エッジ処理で<strong>遅延5ms以下</strong></li>
-            <li>オフライン完全動作</li>
-            <li><strong>2W以内</strong>・FPGA並列処理</li>
-          </ul>
-        </div>
-      </div>
-      <div className="scase-flow r">
-        <SvgMobility run={run} />
-      </div>
-      <div className="scase-spec r">
-        <span className="scase-spec-item">⚡ 2W以内</span>
-        <span className="scase-spec-item">⏱️ 5ms以下</span>
-        <span className="scase-spec-item">💾 FPGA制御</span>
-        <span className="scase-spec-item">🛡️ オフライン対応</span>
-      </div>
-    </div>
-  )
-}
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 14 — DIAGNOSIS (5-step interactive tool) CTA #2
-// ══════════════════════════════════════════════════════════
-function Sdiagnosis() {
-  const [step, setStep] = useState(0)
-  const [answers, setAnswers] = useState<number[]>([])
-  const [done, setDone] = useState(false)
-
-  const questions = [
-    { q:'開発中の製品で最も困っている制約は？', opts:['電力・バッテリー', 'サイズ・小型化', '放熱・熱設計', '通信帯域・データ量'] },
-    { q:'AIチップへの電力予算は？', opts:['1W未満', '1〜5W', '5〜15W', '制限なし / 未定'] },
-    { q:'現在の開発フェーズは？', opts:['企画・コンセプト', '試作・PoC', '量産設計', '既存品の改良'] },
-    { q:'チーム内の専門人材は？', opts:['ハード・ソフト両方いる', 'どちらか一方のみ', 'ほぼ外注依存', '人材が不足している'] },
-    { q:'開発完了の目標期間は？', opts:['3ヶ月以内', '6ヶ月以内', '1年以内', '柔軟に対応したい'] },
+  const cards = [
+    {
+      tag: '事例 2-2',
+      title: 'エアモビリティ用 フライトコントローラ',
+      sub: '140 × 104 mm',
+      visual: <SvgAirMobility run={run} />,
+      points: ['飛行制御・高度・速度・姿勢をリアルタイム制御', '各種センサデータを高速取得・処理', '小型エアモビリティ搭載を想定した低消費電力設計'],
+    },
+    {
+      tag: '事例 2-3',
+      title: '車載ネットワーク セントラルゲートウェイ',
+      sub: '140 × 120 mm',
+      visual: <SvgGateway run={run} />,
+      points: ['1台でCAN / CAN-FD / Ethernetを相互変換', '100Gbps Ethernet 対応の超高速通信', 'セントラルGWとして全車載NWを統合'],
+    },
   ]
 
-  const select = (i: number) => {
-    const newAnswers = [...answers, i]
-    setAnswers(newAnswers)
-    if (step < questions.length - 1) {
-      setTimeout(() => setStep(step + 1), 200)
-    } else {
-      setTimeout(() => setDone(true), 300)
-    }
-  }
-
-  const reset = () => { setStep(0); setAnswers([]); setDone(false) }
-
-  if (done) {
-    return (
-      <div className="sdiag-wrap">
-        <div className="sdiag-done-wrap">
-          <div className="sdiag-done-icon r">✅</div>
-          <div className="sdiag-done-title r">診断完了</div>
-          <div className="sdiag-done-msg r">
-            T²が最適な解決アプローチを提案します。<br />
-            以下のいずれかから今すぐご相談ください。
-          </div>
-          <div className="sdiag-done-btns r">
-            <a className="sdiag-cta sdiag-cta-primary"
-              href={`mailto:info@t2-laboratory.com?subject=制約診断の結果について&body=診断結果：Q1=${answers[0]+1} Q2=${answers[1]+1} Q3=${answers[2]+1} Q4=${answers[3]+1} Q5=${answers[4]+1}`}>
-              <span>📧</span> 診断結果を添えてメール相談
-            </a>
-            <a className="sdiag-cta sdiag-cta-zoom" href="https://calendly.com" target="_blank" rel="noreferrer">
-              <span>📅</span> 30分Zoom相談を予約する
-            </a>
-            <a className="sdiag-cta sdiag-cta-slack" href="https://slack.com" target="_blank" rel="noreferrer">
-              <span>💬</span> Slackでカジュアルに相談
-            </a>
-            <a className="sdiag-cta sdiag-cta-pdf" href="/case-studies.pdf" target="_blank" rel="noreferrer">
-              <span>📄</span> 開発事例PDF をダウンロード
-            </a>
-          </div>
-          <button className="sdiag-reset r" onClick={reset}>↩ もう一度診断する</button>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="sdiag-wrap">
-      <div className="sdiag-label r">CONSTRAINT DIAGNOSIS</div>
-      <h2 className="sdiag-h r">制約<span className="acc">診断</span>ツール</h2>
-      <div className="sdiag-progress r">
-        {questions.map((_, i) => (
-          <div key={i} className={`sdiag-dot${i < step ? ' done' : i === step ? ' active' : ''}`} />
-        ))}
-        <span className="sdiag-prog-txt">STEP {step + 1} / {questions.length}</span>
+    <div className="scase-inner">
+      <div>
+        <div className="lbl r">CASES — MOBILITY</div>
+        <h2 className="scase-h r">高難度領域の<span className="acc">設計実績</span></h2>
       </div>
-      <div className="sdiag-question r" key={step}>{questions[step].q}</div>
-      <div className="sdiag-opts r">
-        {questions[step].opts.map((opt, i) => (
-          <button key={i} className="sdiag-opt" onClick={() => select(i)}>
-            <span className="sdiag-opt-num">0{i + 1}</span>
-            <span className="sdiag-opt-text">{opt}</span>
-          </button>
+      <div className="scase-grid r">
+        {cards.map((c, i) => (
+          <div className="scase-card" key={i}>
+            <div className="scase-card-tag">{c.tag}</div>
+            <div className="scase-card-title">{c.title}</div>
+            <div className="scase-card-partner">{c.sub}</div>
+            <div className="scase-visual">{c.visual}</div>
+            <ul className="scase-points">
+              {c.points.map((p, j) => <li key={j}>{p}</li>)}
+            </ul>
+          </div>
         ))}
+      </div>
+      <div className="scase-footer r">
+        性能・電力・サイズの<span className="acc">　成立ラインを設計　</span>した量産レベルの実績
       </div>
     </div>
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDE 15 — CLOSE / CTA #3 (updated S11)
-// ══════════════════════════════════════════════════════════
 function S11() {
   return (
     <div className="s11-wrap">
@@ -704,43 +688,6 @@ function S11() {
       <div className="s11-sol r">
         T²は<span className="acc">その成立ラインを<br />設計する</span>
       </div>
-
-      {/* ── CTA Grid (4 buttons) ── */}
-      <div className="s11-cta-grid r">
-        <a className="s11-cta-btn s11-cta-primary"
-          href="mailto:info@t2-laboratory.com?subject=制約診断の依頼">
-          <span className="s11-cta-icon">🔍</span>
-          <div className="s11-cta-body">
-            <div className="s11-cta-label">制約診断ツール</div>
-            <div className="s11-cta-sub">5問で設計ボトルネックを可視化</div>
-          </div>
-        </a>
-        <a className="s11-cta-btn s11-cta-slack"
-          href="https://slack.com" target="_blank" rel="noreferrer">
-          <span className="s11-cta-icon">💬</span>
-          <div className="s11-cta-body">
-            <div className="s11-cta-label">Slackで問い合わせ</div>
-            <div className="s11-cta-sub">T²チームに直接相談</div>
-          </div>
-        </a>
-        <a className="s11-cta-btn s11-cta-zoom"
-          href="https://calendly.com" target="_blank" rel="noreferrer">
-          <span className="s11-cta-icon">📅</span>
-          <div className="s11-cta-body">
-            <div className="s11-cta-label">30分Zoom相談</div>
-            <div className="s11-cta-sub">Calendly で今すぐ予約</div>
-          </div>
-        </a>
-        <a className="s11-cta-btn s11-cta-pdf"
-          href="/case-studies.pdf" target="_blank" rel="noreferrer">
-          <span className="s11-cta-icon">📄</span>
-          <div className="s11-cta-body">
-            <div className="s11-cta-label">開発事例を見る</div>
-            <div className="s11-cta-sub">PDF ダウンロード（無料）</div>
-          </div>
-        </a>
-      </div>
-
       <div className="s11-contact r">
         <div className="s11-clbl">お問い合わせ</div>
         <div className="s11-email"><a href="mailto:info@t2-laboratory.com">info@t2-laboratory.com</a></div>
@@ -754,14 +701,10 @@ function S11() {
   )
 }
 
-// ══════════════════════════════════════════════════════════
-// SLIDES ARRAY
-// ══════════════════════════════════════════════════════════
-const SLIDES = [S1, S2, S3, S4c, S4, ScTA1, S5, S6, S7, S8, S9, S10, Scase1, Scase2, Sdiagnosis, S11]
+const SLIDES = [S1, S2, S3, S4c, S4, S5, S6, S7, S8, S9, S10, Scase1, Scase2, S11]
 
-// ══════════════════════════════════════════════════════════
-// MAIN APP
-// ══════════════════════════════════════════════════════════
+// ── main App ──────────────────────────────────────────────
+
 export default function App() {
   const [state, setState] = useState<SlideState>({ cur: 1, prev: null, dir: 'fwd', busy: false })
   const touchX = useRef(0)
@@ -769,16 +712,25 @@ export default function App() {
   const go = useCallback((n: number) => {
     setState(s => {
       if (n < 1 || n > TOTAL || n === s.cur || s.busy) return s
+      // 修正10: S5→S6遷移時に0.2秒ディレイで視覚的区切りを強調
+      if (s.cur === 5 && n === 6) {
+        setTimeout(() => {
+          setState(prev => ({ ...prev, cur: 6, prev: 5, dir: 'fwd', busy: true }))
+        }, 200)
+        return s // 一旦据え置き、setTimeoutで遷移
+      }
       return { cur: n, prev: s.cur, dir: n > s.cur ? 'fwd' : 'bwd', busy: true }
     })
   }, [])
 
+  // clear busy after animation
   useEffect(() => {
     if (!state.busy) return
     const t = setTimeout(() => setState(s => ({ ...s, prev: null, busy: false })), 480)
     return () => clearTimeout(t)
   }, [state.busy, state.cur])
 
+  // keyboard
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(state.cur + 1) }
@@ -788,6 +740,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', h)
   }, [state.cur, go])
 
+  // touch
   useEffect(() => {
     const ts = (e: TouchEvent) => { touchX.current = e.touches[0].clientX }
     const te = (e: TouchEvent) => {
@@ -796,58 +749,69 @@ export default function App() {
     }
     window.addEventListener('touchstart', ts, { passive: true })
     window.addEventListener('touchend', te, { passive: true })
-    return () => {
-      window.removeEventListener('touchstart', ts)
-      window.removeEventListener('touchend', te)
-    }
+    return () => { window.removeEventListener('touchstart', ts); window.removeEventListener('touchend', te) }
   }, [state.cur, go])
 
-  return (
-    <div className="root">
-      {/* ── Top Nav ── */}
-      <nav className="nav">
-        <div className="nav-logo">T²</div>
-        <div className="nav-label">{LABELS[state.cur - 1]}</div>
-        <div className="nav-btns">
-          <button className="nav-btn" onClick={() => go(state.cur - 1)} disabled={state.cur <= 1}>PREV</button>
-          <div className="counter">
-            <span className="counter-cur">{String(state.cur).padStart(2,'0')}</span>
-            <span className="counter-sep">/</span>
-            <span className="counter-tot">{String(TOTAL).padStart(2,'0')}</span>
-          </div>
-          <button className="nav-btn" onClick={() => go(state.cur + 1)} disabled={state.cur >= TOTAL}>NEXT</button>
-        </div>
-      </nav>
+  // ── 全スライド共通：オーバーフロー検知 → 自動スクロール ──
+  useEffect(() => {
+    // トランジション完了後に実行
+    const tStart = setTimeout(() => {
+      const activeSlide = document.querySelector('.slide.active') as HTMLElement | null
+      if (!activeSlide) return
+      // スクロール位置をリセット（スライド切替時）
+      activeSlide.scrollTop = 0
+      const overflow = activeSlide.scrollHeight - activeSlide.clientHeight
+      if (overflow <= 24) return // 有意なオーバーフローがなければスキップ
+      // 1.2秒後にスクロールダウン開始
+      const tDown = setTimeout(() => {
+        activeSlide.scrollTo({ top: overflow, behavior: 'smooth' })
+        // 3秒後にトップへ戻る
+        const tUp = setTimeout(() => {
+          activeSlide.scrollTo({ top: 0, behavior: 'smooth' })
+        }, 3000)
+        return () => clearTimeout(tUp)
+      }, 1200)
+      return () => clearTimeout(tDown)
+    }, 550) // アニメーション完了（480ms）後
+    return () => clearTimeout(tStart)
+  }, [state.cur])
 
-      {/* ── Slide Wrapper ── */}
+  const progress = (state.cur / TOTAL * 100).toFixed(1) + '%'
+
+  return (
+    <>
+      {/* progress */}
+      <div className="prog" style={{ width: progress }} />
+      <div className="slabel">{LABELS[state.cur - 1]}</div>
+
+      {/* slides */}
       <div className="sw">
         {SLIDES.map((Slide, i) => {
           const n = i + 1
-          const isActive = n === state.cur
-          const isExit = n === state.prev
           let cls = 'slide'
-          if (isActive) cls += ' active'
-          if (isExit) cls += state.dir === 'fwd' ? ' exit-fwd' : ' exit-bwd'
-          if (isActive && !isExit) cls += state.dir === 'fwd' ? ' enter-fwd' : ' enter-bwd'
+          if (n === state.cur) cls += state.prev !== null ? ` active enter-${state.dir}` : ' active'
+          else if (n === state.prev) cls += ` exit-${state.dir}`
           return (
-            <div className={cls} key={n} aria-hidden={!isActive}>
+            <div className={cls} key={n}>
               <Slide />
             </div>
           )
         })}
       </div>
 
-      {/* ── Slide indicator dots ── */}
-      <div className="dots">
-        {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            className={`dot${state.cur === i + 1 ? ' dot-active' : ''}`}
-            onClick={() => go(i + 1)}
-            aria-label={`Slide ${i + 1}`}
-          />
-        ))}
-      </div>
-    </div>
+      {/* nav */}
+      <nav className="nav">
+        <button className="nav-btn" onClick={() => go(state.cur - 1)} disabled={state.cur === 1}>
+          ◀ PREV
+        </button>
+        <div className="counter">
+          <span className="counter-cur">{String(state.cur).padStart(2, '0')}</span>
+          <span className="counter-tot">/ {TOTAL}</span>
+        </div>
+        <button className="nav-btn next" onClick={() => go(state.cur + 1)} disabled={state.cur === TOTAL}>
+          NEXT ▶
+        </button>
+      </nav>
+    </>
   )
 }
