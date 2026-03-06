@@ -285,7 +285,7 @@
   align-items: center;
   margin-top: clamp(36px, 5.5vh, 60px);
 }
-.v2-tri-svg { width: 100%; max-width: 400px; display: block; }
+.v2-tri-svg { width: 100%; max-width: 420px; display: block; overflow: visible; }
 .v2-tri-info { display: flex; flex-direction: column; gap: 18px; }
 .v2-tri-row {
   padding: 18px 22px;

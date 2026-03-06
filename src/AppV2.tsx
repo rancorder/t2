@@ -74,7 +74,7 @@ function TriangleSvg({ active }: { active: number }) {
     { x: 370, y: 295, label: 'PERF',  dx: 20,  dy: 16  },
   ]
   return (
-    <svg viewBox="0 0 400 330" className="v2-tri-svg">
+    <svg viewBox="-40 -30 480 400" className="v2-tri-svg">
       {/* Edges */}
       {[[0,1],[1,2],[2,0]].map(([a,b], i) => (
         <line key={i}
@@ -450,7 +450,7 @@ export default function AppV2() {
           <div className="v2-label">TRADEOFF STRUCTURE</div>
           <div className="v2-sec-title">3点が<span className="hi">同時に成立する</span>ラインを見つける</div>
           <div className="v2-tri-wrap">
-            <div style={{ display:'flex', justifyContent:'center' }}>
+            <div style={{ display:'flex', justifyContent:'center', overflow:'visible' }}>
               <TriangleSvg active={triActive} />
             </div>
             <div className="v2-tri-info">
