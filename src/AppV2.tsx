@@ -16,7 +16,8 @@ async function loadGSAP() {
     const st  = await import('gsap/ScrollTrigger')
     gsap = mod.gsap
     ScrollTrigger = st.ScrollTrigger
-    gsap.registerPlugin(ScrollTrigger)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    gsap!.registerPlugin(ScrollTrigger)
     gsapReady = true
   } catch (_) {
     // gsap が未インストールの場合はフォールバック
@@ -280,9 +281,11 @@ export default function AppV2() {
   useEffect(() => {
     loadGSAP().then(() => {
       if (!gsap || !ScrollTrigger) return
+      const g = gsap
+      const ST = ScrollTrigger
 
       // Hero entrance
-      gsap.timeline({ delay: 0.15 })
+      g.timeline({ delay: 0.15 })
         .from('.v2-hero-eyebrow', { duration: 0.6, opacity: 0, y: 16, ease: 'power2.out' })
         .from('.v2-hero-pain-line', { duration: 0.55, opacity: 0, y: 18, stagger: 0.15, ease: 'power2.out' }, '-=0.3')
         .to('.v2-hero-divider', { duration: 0.5, width: 48, ease: 'power2.out' }, '-=0.1')
@@ -292,63 +295,63 @@ export default function AppV2() {
         .from('.v2-scroll-ind', { duration: 0.5, opacity: 0, ease: 'power2.out' }, '-=0.1')
 
       // Section labels + titles
-      gsap.utils.toArray<HTMLElement>('.v2-label').forEach(el => {
-        gsap.from(el, {
+      g.utils.toArray<HTMLElement>('.v2-label').forEach(el => {
+        g.from(el, {
           scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
           duration: 0.55, opacity: 0, x: -18, ease: 'power2.out'
         })
       })
 
-      gsap.utils.toArray<HTMLElement>('.v2-sec-title').forEach(el => {
-        gsap.from(el, {
+      g.utils.toArray<HTMLElement>('.v2-sec-title').forEach(el => {
+        g.from(el, {
           scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
           duration: 0.7, opacity: 0, y: 28, ease: 'power3.out'
         })
       })
 
       // Pain cards — stagger
-      gsap.from('.v2-pain-card', {
+      g.from('.v2-pain-card', {
         scrollTrigger: { trigger: '.v2-pain-grid', start: 'top 82%' },
         duration: 0.65, opacity: 0, y: 36, stagger: 0.18, ease: 'power2.out'
       })
 
       // Triangle section
-      gsap.from('.v2-tri-svg', {
+      g.from('.v2-tri-svg', {
         scrollTrigger: { trigger: '.v2-tri-wrap', start: 'top 80%' },
         duration: 0.8, opacity: 0, scale: 0.88, ease: 'power2.out'
       })
-      gsap.from('.v2-tri-row', {
+      g.from('.v2-tri-row', {
         scrollTrigger: { trigger: '.v2-tri-info', start: 'top 80%' },
         duration: 0.55, opacity: 0, x: 22, stagger: 0.16, ease: 'power2.out'
       })
 
       // Flow steps
-      gsap.from('.v2-flow-step', {
+      g.from('.v2-flow-step', {
         scrollTrigger: { trigger: '.v2-flow', start: 'top 82%' },
         duration: 0.6, opacity: 0, y: 28, stagger: 0.14, ease: 'power2.out'
       })
 
       // Case cards
-      gsap.from('.v2-case-card', {
+      g.from('.v2-case-card', {
         scrollTrigger: { trigger: '.v2-cases-grid', start: 'top 82%' },
         duration: 0.6, opacity: 0, y: 24, stagger: 0.14, ease: 'power2.out'
       })
 
       // Footer CTA cards
-      gsap.from('.v2-footer-cta-card', {
+      g.from('.v2-footer-cta-card', {
         scrollTrigger: { trigger: '.v2-footer-cta-grid', start: 'top 85%' },
         duration: 0.55, opacity: 0, y: 22, stagger: 0.12, ease: 'power2.out'
       })
 
       // Diagnostic section
-      gsap.from('.v2-diag-wrap', {
+      g.from('.v2-diag-wrap', {
         scrollTrigger: { trigger: '.v2-diag-wrap', start: 'top 82%' },
         duration: 0.7, opacity: 0, y: 32, ease: 'power2.out'
       })
 
       // Horizontal rule — wipe effect
-      gsap.utils.toArray<HTMLElement>('.v2-footer').forEach(el => {
-        gsap.from(el, {
+      g.utils.toArray<HTMLElement>('.v2-footer').forEach(el => {
+        g.from(el, {
           scrollTrigger: { trigger: el, start: 'top 88%' },
           duration: 0.8, opacity: 0, y: 20, ease: 'power2.out'
         })
